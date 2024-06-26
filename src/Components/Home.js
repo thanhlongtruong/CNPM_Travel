@@ -1,9 +1,9 @@
 function Home() {
   return (
-    <div className="flex flex-row  w-screen bg-slate-400">
+    <div className="flex w-screen flex-row bg-black bg-slate-400">
       <a href="#">Traveloka</a>
       <a href="#">Đặt chỗ của tôi</a>
-      <button className="content_center border-2 border-blue-700 rounded-md flex flex-row ">
+      <button className="content_center flex flex-row rounded-md border-2 border-blue-700">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
