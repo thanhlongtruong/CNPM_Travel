@@ -16,5 +16,5 @@ code {
 }
 
 .div-flex-adjust-justify-between {
-  @apply flex flex-row justify-between w-full;
+  @apply flex flex-row justify-between items-center;
 }
