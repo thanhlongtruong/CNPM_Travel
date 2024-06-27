@@ -1,42 +1,45 @@
-function Home() {
-  return (
-    <div className="w-screen h-screen   bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')]">
-      {/* div1 */}
-      <div className="div-flex-adjust-justify-between w-full bg-transparent p-4 text-[20px] border-b-[0.5px] border-gray-600">
-        <a href="#">
-          <img src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/f/fbab4f587da2242fbe9858fe3e5ba717.svg" />
-        </a>
-        <div className="div-flex-adjust-justify-between w-fit gap-x-10">
-          <a href="#" className="text-white">
-            Đặt chỗ của tôi
-          </a>
-          <button className="content_center border-2 border-white text-white rounded-md flex flex-row p-[10px]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-              />
-            </svg>
-            Đăng nhập
-          </button>
+import { useRef, useState } from "react";
+import Header from "./Header.js";
 
-          <button className="bg-[#0194f3] text-white rounded-md p-[10px]">
-            Đăng ký
-          </button>
-        </div>
-      </div>
+function Home() {
+  //khứ hồi
+  const [isState, setState] = useState("bg-gray-400 pointer-events-none");
+  const handle = () => {
+    setState(
+      isState == "bg-gray-400 pointer-events-none"
+        ? "bg-white"
+        : "bg-gray-400 pointer-events-none"
+    );
+    console.log(isState);
+  };
+
+  //get text
+  const selectRefBay = useRef(null);
+  const selectRefDap = useRef(null);
+  const [isSwap, setSwap] = useState(selectRefBay);
+
+  const hand = () => {
+    setSwap(isSwap == selectRefBay ? selectRefDap : selectRefBay);
+    console.log(
+      isSwap.current.options[selectRefBay.current.selectedIndex].text
+    );
+    setSwap(isSwap == selectRefBay ? isSwap : selectRefBay);
+    console.log(isSwap.current.options[isSwap.current.selectedIndex].text);
+  };
+
+  const swapText = () => {
+    console.log(
+      selectRefDap.current.options[selectRefDap.current.selectedIndex].text
+    );
+  };
+
+  return (
+    <div className="w-screen h-screen bg-cover bg-center p-0 bg-no-repeat bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')]">
+      <Header />
       {/* div2 */}
-      <div className="flex flex-row items-center justify-evenly">
+      <div className="flex flex-col items-center justify-evenly lg:flex-row">
         {/* sân bay */}
-        <div className="w-[42%] flex flex-row relative">
+        <div className="w-[80%] lg:w-[42%] flex flex-row relative">
           <div className="w-[50%]">
             <span className="text-white text-[20px]">Từ</span>
             <div className="flex flex-row justify-evenly items-center w-full rounded-l-2xl p-4 text-[25px] border-y-4 border-l-4 border-r-2 border-[#cdd0d1] bg-white">
@@ -68,6 +71,7 @@ function Home() {
                 </svg>
               </label>
               <select
+                ref={selectRefBay}
                 id="bay-select"
                 className="appearance-none text-left max-w-[70%]"
               >
@@ -108,6 +112,7 @@ function Home() {
                 </svg>
               </label>
               <select
+                ref={selectRefDap}
                 id="dap-select"
                 className="appearance-none text-left max-w-[70%]"
               >
@@ -117,7 +122,10 @@ function Home() {
               </select>
             </div>
           </div>
-          <button className="absolute bottom-[14%] left-[50%] transform translate-x-[-50%] bg-white rounded-full border-2  border-[#cdd0d1]">
+          <button
+            onClick={hand}
+            className="absolute bottom-[14%] left-[50%] transform translate-x-[-50%] bg-white rounded-full border-2  border-[#cdd0d1]"
+          >
             <img
               className="p-2"
               src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/3/331a92149a02dc615986206c588d6642.svg"
@@ -125,9 +133,9 @@ function Home() {
           </button>
         </div>
         {/* ngày */}
-        <div className="w-[42%] flex flex-row">
+        <div className="w-[80%] lg:w-[42%] flex flex-row">
           <div className="w-[50%]">
-            <span className="text-white text-[20px]">Từ</span>
+            <span className="text-white text-[20px]">Ngày đi</span>
             <div className="flex flex-row justify-evenly items-center w-full rounded-l-2xl p-4 text-[25px] border-y-4 border-l-4 border-r-2 border-[#cdd0d1] bg-white">
               <label htmlFor="ngay-di-select">
                 <svg
@@ -160,8 +168,21 @@ function Home() {
             </div>
           </div>
           <div className="w-[50%]">
-            <span className="text-white text-[20px]">Đến</span>
-            <div className="flex flex-row justify-evenly items-center w-full rounded-r-2xl p-4 pl-8 text-[25px] border-y-4 border-r-4 border-[#cdd0d1] bg-white">
+            <div className="flex-row w-fit">
+              <input
+                id="khu_hoi_check"
+                type="checkbox"
+                onClick={handle}
+                className="size-4 "
+              />
+              &nbsp;
+              <label htmlFor="khu_hoi_check" className="text-white text-[20px]">
+                Khứ hồi
+              </label>
+            </div>
+            <div
+              className={`flex flex-row justify-evenly items-center w-full rounded-r-2xl p-4 pl-8 text-[25px] border-y-4 border-r-4 border-[#cdd0d1] ${isState}`}
+            >
               <label htmlFor="ngay-ve-select">
                 <svg
                   width="24"
@@ -189,12 +210,12 @@ function Home() {
                   ></path>
                 </svg>
               </label>
-              <input type="date" />
+              <input type="date" className={`${isState}`} />
             </div>
           </div>
         </div>
         {/* Tìm */}
-        <button className="bg-[#ff5e1f] p-5 self-end rounded-2xl border-4 border-[rgba(205,208,209,0.50)]">
+        <button className="bg-[#ff5e1f] p-5 m-[15px] lg:m-0 lg:self-end rounded-2xl border-4 border-[rgba(205,208,209,0.50)]">
           <svg
             width="24"
             height="24"
@@ -216,4 +237,5 @@ function Home() {
     </div>
   );
 }
+
 export default Home;
