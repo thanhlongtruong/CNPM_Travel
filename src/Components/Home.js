@@ -1,13 +1,17 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
 import Header from './Header.js';
 import { Login } from './Login.js';
+import { CONTEXT } from '../Context/WindowLogin.js';
 
 function Home() {
   //khứ hồi
-  const [isState, setState] = useState('bg-gray-400 pointer-events-none');
+  const [isStateCheckbox, setStateCheckbox] = useState('bg-gray-400 pointer-events-none select-none');
   const handle = () => {
-    setState(isState == 'bg-gray-400 pointer-events-none' ? 'bg-white' : 'bg-gray-400 pointer-events-none');
-    console.log(isState);
+    setStateCheckbox(
+      isStateCheckbox == 'bg-gray-400 pointer-events-none select-none'
+        ? 'bg-white'
+        : 'bg-gray-400 pointer-events-none select-none',
+    );
   };
 
   //get text
@@ -25,9 +29,11 @@ function Home() {
     setDap(selectRefDap.current.options[selectRefDap.current.selectedIndex].text);
   };
 
+  const { isState } = useContext(CONTEXT);
+
   return (
     <>
-      {/* <Login /> */}
+      {isState && <Login />}
       <div className="relative h-screen w-screen bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')] bg-cover bg-center bg-no-repeat p-0">
         <Header />
         {/* div2 */}
@@ -175,7 +181,7 @@ function Home() {
                 </label>
               </div>
               <div
-                className={`flex w-full flex-row items-center justify-evenly rounded-r-2xl border-y-4 border-r-4 border-[#cdd0d1] p-4 pl-8 text-[25px] ${isState}`}
+                className={`flex w-full flex-row items-center justify-evenly rounded-r-2xl border-y-4 border-r-4 border-[#cdd0d1] p-4 pl-8 text-[25px] ${isStateCheckbox}`}
               >
                 <label htmlFor="ngay-ve-select">
                   <svg
@@ -204,7 +210,7 @@ function Home() {
                     ></path>
                   </svg>
                 </label>
-                <input type="date" className={`${isState}`} />
+                <input type="date" className={`${isStateCheckbox}`} />
               </div>
             </div>
           </div>

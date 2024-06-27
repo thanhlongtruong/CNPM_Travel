@@ -1,10 +1,14 @@
+import { useContext } from 'react';
+import { CONTEXT } from '../Context/WindowLogin';
+
 export function Login() {
+  const { handState } = useContext(CONTEXT);
   return (
     <div className="absolute z-10 flex h-full w-full items-center bg-white/10 backdrop-brightness-75">
       <div className="m-auto h-[490px] w-[450px] rounded-lg bg-white px-4">
         <div className="div-flex-adjust-justify-between flex h-14 w-full">
           <p className="w-[90%] text-2xl font-bold"> Đăng nhập / Đăng ký</p>
-          <div className="w-[10%]">
+          <div className="w-[10%]" onClick={handState}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
