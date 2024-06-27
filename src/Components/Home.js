@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import Header from "./Header.js";
+import Footer from "./Footer.js";
 
 function Home() {
   //khứ hồi
@@ -234,6 +235,7 @@ function Home() {
           </svg>
         </button>
       </div>
+      <Footer />
     </div>
   );
 }
