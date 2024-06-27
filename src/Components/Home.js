@@ -15,20 +15,21 @@ function Home() {
 
   //get text
   const selectRefBay = useRef(null);
+  const [isBay, setBay] = useState("");
   const selectRefDap = useRef(null);
-  const [isSwap, setSwap] = useState(selectRefBay);
+  const [isDap, setDap] = useState("");
+  const handleSwap = () => {
+    const temp =
+      selectRefBay.current.options[selectRefBay.current.selectedIndex].text;
+    selectRefBay.current.options[selectRefBay.current.selectedIndex].text =
+      selectRefDap.current.options[selectRefDap.current.selectedIndex].text;
+    selectRefDap.current.options[selectRefDap.current.selectedIndex].text =
+      temp;
 
-  const hand = () => {
-    setSwap(isSwap == selectRefBay ? selectRefDap : selectRefBay);
-    console.log(
-      isSwap.current.options[selectRefBay.current.selectedIndex].text
+    setBay(
+      selectRefBay.current.options[selectRefBay.current.selectedIndex].text
     );
-    setSwap(isSwap == selectRefBay ? isSwap : selectRefBay);
-    console.log(isSwap.current.options[isSwap.current.selectedIndex].text);
-  };
-
-  const swapText = () => {
-    console.log(
+    setDap(
       selectRefDap.current.options[selectRefDap.current.selectedIndex].text
     );
   };
@@ -72,6 +73,14 @@ function Home() {
               </label>
               <select
                 ref={selectRefBay}
+                value={isBay}
+                onChange={() =>
+                  setBay(
+                    selectRefBay.current.options[
+                      selectRefBay.current.selectedIndex
+                    ].text
+                  )
+                }
                 id="bay-select"
                 className="appearance-none text-left max-w-[70%]"
               >
@@ -113,6 +122,14 @@ function Home() {
               </label>
               <select
                 ref={selectRefDap}
+                value={isDap}
+                onChange={() =>
+                  setBay(
+                    selectRefDap.current.options[
+                      selectRefDap.current.selectedIndex
+                    ].text
+                  )
+                }
                 id="dap-select"
                 className="appearance-none text-left max-w-[70%]"
               >
@@ -123,7 +140,7 @@ function Home() {
             </div>
           </div>
           <button
-            onClick={hand}
+            onClick={handleSwap}
             className="absolute bottom-[14%] left-[50%] transform translate-x-[-50%] bg-white rounded-full border-2  border-[#cdd0d1]"
           >
             <img
