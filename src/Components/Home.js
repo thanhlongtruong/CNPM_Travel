@@ -1,3 +1,4 @@
+import Footer from "./Footer.js";
 import { useRef, useState, useContext } from 'react';
 import Header from './Header.js';
 import { Login } from './Login.js';
@@ -235,6 +236,10 @@ function Home() {
           </button>
         </div>
       </div>
+
+      <Footer />
+    </div>
+
     </>
   );
 }
