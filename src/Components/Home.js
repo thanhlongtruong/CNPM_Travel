@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import Header from "./Header.js";
 
 function Home() {
-  //khứ hồi
+  //unlock khứ hồi
   const [isState, setState] = useState("bg-gray-400 pointer-events-none");
   const handle = () => {
     setState(
@@ -13,7 +13,7 @@ function Home() {
     console.log(isState);
   };
 
-  //get text
+  //swap bay - dap
   const selectRefBay = useRef(null);
   const [isBay, setBay] = useState("");
   const selectRefDap = useRef(null);
@@ -37,7 +37,6 @@ function Home() {
   return (
     <div className="w-screen h-screen bg-cover bg-center p-0 bg-no-repeat bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')]">
       <Header />
-      {/* div2 */}
       <div className="flex flex-col items-center justify-evenly lg:flex-row">
         {/* sân bay */}
         <div className="w-[80%] lg:w-[42%] flex flex-row relative">
@@ -154,33 +153,6 @@ function Home() {
           <div className="w-[50%]">
             <span className="text-white text-[20px]">Ngày đi</span>
             <div className="flex flex-row justify-evenly items-center w-full rounded-l-2xl p-4 text-[25px] border-y-4 border-l-4 border-r-2 border-[#cdd0d1] bg-white">
-              <label htmlFor="ngay-di-select">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  data-id="IcSystemCalendar"
-                >
-                  <path
-                    d="M7 2V5M17 2V5M3 8H21M11.5 11.5H12.5V12.5H11.5V11.5ZM11.5 16.5H12.5V17.5H11.5V16.5ZM16.5 11.5H17.5V12.5H16.5V11.5ZM6.5 16.5H7.5V17.5H6.5V16.5ZM5 21H19C20.1046 21 21 20.1046 21 19V6C21 4.89543 20.1046 4 19 4H5C3.89543 4 3 4.89543 3 6V19C3 20.1046 3.89543 21 5 21Z"
-                    stroke="#0194f3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M7.5 11.5V12.5H6.5V11.5H7.5Z"
-                    stroke="#0194F3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                </svg>
-              </label>
               <input type="date" />
             </div>
           </div>
@@ -200,33 +172,6 @@ function Home() {
             <div
               className={`flex flex-row justify-evenly items-center w-full rounded-r-2xl p-4 pl-8 text-[25px] border-y-4 border-r-4 border-[#cdd0d1] ${isState}`}
             >
-              <label htmlFor="ngay-ve-select">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  data-id="IcSystemCalendar"
-                >
-                  <path
-                    d="M7 2V5M17 2V5M3 8H21M11.5 11.5H12.5V12.5H11.5V11.5ZM11.5 16.5H12.5V17.5H11.5V16.5ZM16.5 11.5H17.5V12.5H16.5V11.5ZM6.5 16.5H7.5V17.5H6.5V16.5ZM5 21H19C20.1046 21 21 20.1046 21 19V6C21 4.89543 20.1046 4 19 4H5C3.89543 4 3 4.89543 3 6V19C3 20.1046 3.89543 21 5 21Z"
-                    stroke="#0194f3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M7.5 11.5V12.5H6.5V11.5H7.5Z"
-                    stroke="#0194F3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                </svg>
-              </label>
               <input type="date" className={`${isState}`} />
             </div>
           </div>
