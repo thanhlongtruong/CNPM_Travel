@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import Header from "./Header.js";
 
 function Home() {
   //unlock khứ hồi
@@ -36,7 +35,6 @@ function Home() {
 
   return (
     <div className="w-screen h-screen bg-cover bg-center p-0 bg-no-repeat bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')]">
-      <Header />
       <div className="flex flex-col items-center justify-evenly lg:flex-row">
         {/* sân bay */}
         <div className="w-[80%] lg:w-[42%] flex flex-row relative">
@@ -72,7 +70,6 @@ function Home() {
               </label>
               <select
                 ref={selectRefBay}
-                value={isBay}
                 onChange={() =>
                   setBay(
                     selectRefBay.current.options[
@@ -121,7 +118,6 @@ function Home() {
               </label>
               <select
                 ref={selectRefDap}
-                value={isDap}
                 onChange={() =>
                   setBay(
                     selectRefDap.current.options[
