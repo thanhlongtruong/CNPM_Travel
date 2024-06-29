@@ -153,12 +153,12 @@ function Home() {
             </div>
           </div>
           <div className="w-[50%]">
-            <div className="flex-row w-fit">
+            <div className="flex-row w-fit line-clamp-1">
               <input
                 id="khu_hoi_check"
                 type="checkbox"
                 onClick={handle}
-                className="size-4 "
+                className="h-[22px]"
               />
               &nbsp;
               <label htmlFor="khu_hoi_check" className="text-white text-[20px]">

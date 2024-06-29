@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
@@ -8,8 +8,22 @@ import { format, addDays, parse } from "date-fns";
 import { vi } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import DoiTimKiemChuyenBay from "./DoiTimKiemChuyenBay.js";
+import { CONTEXT } from "../Context/DoiTimKiemChuyenBay.js";
 
 export default function XemDanhSachChuyenBay() {
+  //Đổi tìm kiếm chuyến bay
+  const {
+    dialogDoiTimKiem,
+    handleDialogDoiTimKiem,
+    isBay,
+    isDap,
+    today,
+    setToday,
+    switchNgayBay,
+    setSwitchNgayBay,
+  } = useContext(CONTEXT);
+
   //Copy mã voucher
   const copyRefVoucher = useRef("");
   const copyToClipboard = async () => {
@@ -65,11 +79,7 @@ export default function XemDanhSachChuyenBay() {
   const [isAjustHovered, setAdjustHovered] = useState(false);
 
   //click ngày bay
-  const [today, setToday] = useState(new Date());
   const ngayBayRef = useRef([]);
-  const [switchNgayBay, setSwitchNgayBay] = useState(
-    format(today, "EEEE, d 'thg' M yyyy", { locale: vi })
-  );
   const [clickedNgayBay, setNgayBay] = useState(null);
 
   const handleNgayBay = (i, j) => {
@@ -239,7 +249,8 @@ export default function XemDanhSachChuyenBay() {
   };
 
   return (
-    <div className="w-full h-fit flex flex-row justify-center bg-slate-100">
+    <div className="relative w-full h-fit flex flex-row justify-center bg-slate-100">
+      {dialogDoiTimKiem && <DoiTimKiemChuyenBay />}
       <div id="left" className="flex flex-col items-center w-[25%]">
         <div id="Khuyen-mai">
           <div className="flex flex-row items-center mt-4">
@@ -392,7 +403,7 @@ export default function XemDanhSachChuyenBay() {
               </table>
             </div>
           ))}
-          <div id="Thoi-gian-bay" className="mt-4 content-center">
+          <div id="Thoi-gian-bay" className="mt-4 ">
             <div className="text-[#031218] font-semibold text-lg flex flex-row justify-between">
               <span>Thời gian bay</span>
               <span>{`${valueThoiGianBay[0]}h - ${valueThoiGianBay[1]}h`}</span>
@@ -540,7 +551,8 @@ export default function XemDanhSachChuyenBay() {
           >
             <div>
               <p className="text-lg font-bold leading-[30px] line-clamp-1">
-                TP HCM (SGN) → Tokyo (TYOA)
+                {isBay === null ? "Sân bay Đà Nẵng" : isBay} →
+                {isDap === null ? "Sân bay Tokyo" : isDap}
               </p>
               <span className="text-base font-semibold text-[#687176] leading-[35px]">
                 {switchNgayBay}
@@ -548,6 +560,13 @@ export default function XemDanhSachChuyenBay() {
             </div>
             {isAjustHovered ? (
               <span
+                onClick={() =>
+                  handleDialogDoiTimKiem(
+                    () => (isBay === null ? "Sân bay Đà Nẵng" : isBay),
+                    () => (isDap === null ? "Sân bay Tokyo" : isDap),
+                    today
+                  )
+                }
                 className={`text-base font-semibold text-zinc-800 hover:text-[#0194f3] cursor-pointer`}
               >
                 Đổi tìm kiếm
@@ -555,7 +574,6 @@ export default function XemDanhSachChuyenBay() {
             ) : (
               ""
             )}
-
             <svg
               width="16"
               height="24"
@@ -723,7 +741,9 @@ export default function XemDanhSachChuyenBay() {
               onClick={() => handleXemChiTiet(i)}
               className="cursor-pointer mb-[2%] hover:border-[1px] hover:border-[#109AF4] hover:rounded-xl"
             >
-              <div className="div-flex-adjust-justify-between rounded-xl bg-white p-[2%]">
+              <div
+                className={`div-flex-adjust-justify-between ${xemChiTiet[i] ? "rounded-t-xl" : "rounded-xl"} bg-white p-[2%]`}
+              >
                 <div className="flex flex-row items-center text-2xl font-semibold">
                   <div className="flex flex-col items-center">
                     <span>12:20</span>
