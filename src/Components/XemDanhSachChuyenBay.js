@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import { Slide } from "react-slideshow-image";
 import "react-slideshow-image/dist/styles.css";
+import { format, addDays, parse } from "date-fns";
+import { vi } from "date-fns/locale";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function XemDanhSachChuyenBay() {
+  //Copy mã voucher
+  const copyRefVoucher = useRef("");
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(copyRefVoucher.current.textContent);
+      alert(copyRefVoucher.current.textContent + " is copied to clipboard");
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  };
   //chọn giờ
   const [clickedIndex, setClickedIndex] = useState(null);
 
@@ -50,8 +64,182 @@ export default function XemDanhSachChuyenBay() {
   //hover thanh chỉnh sửa
   const [isAjustHovered, setAdjustHovered] = useState(false);
 
+  //click ngày bay
+  const [today, setToday] = useState(new Date());
+  const ngayBayRef = useRef([]);
+  const [switchNgayBay, setSwitchNgayBay] = useState(
+    format(today, "EEEE, d 'thg' M yyyy", { locale: vi })
+  );
+  const [clickedNgayBay, setNgayBay] = useState(null);
+
+  const handleNgayBay = (i, j) => {
+    setNgayBay((clickedNgayBay) =>
+      clickedNgayBay?.[0] === i && clickedNgayBay?.[1] === j ? null : [i, j]
+    );
+  };
+
+  const handleDivNgayBayClick = (index) => {
+    setSwitchNgayBay(ngayBayRef.current[index].textContent);
+    setSelectedDate(parseVietnameseDate(ngayBayRef.current[index].textContent));
+  };
+
+  //datePicker
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const handleSVGClick = () => {
+    setShowDatePicker(showDatePicker ? false : true);
+  };
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    setSwitchNgayBay(
+      date.toLocaleDateString("vi-VN", {
+        weekday: "long",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    );
+    setToday(date);
+    setShowDatePicker(false);
+  };
+
+  //Tính ngày và tạo slot cho slide
+  const daysToShow = 15;
+  const slotsPerSlidePhone = 2; // Number of slots per slide for phones
+  const slotsPerSlideTablet = 3; // Number of slots per slide for tablets
+  const slotsPerSlideLaptop = 5; // Number of slots per slide for laptops (md
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slotsPerSlide, setSlotsPerSlide] = useState(slotsPerSlidePhone);
+
+  useEffect(() => {
+    // Update number of slots per slide based on screen size
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSlotsPerSlide(slotsPerSlideLaptop); // Laptop size (md)
+      } else if (window.innerWidth >= 768) {
+        setSlotsPerSlide(slotsPerSlideTablet); // Tablet size (sm)
+      } else {
+        setSlotsPerSlide(slotsPerSlidePhone); // Phone size (xs)
+      }
+    };
+
+    // Initial check on component mount
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const createDateSlides = () => {
+    let slides = [];
+    for (let i = 0; i < daysToShow; i += slotsPerSlide) {
+      let slots = [];
+      for (let j = 0; j < slotsPerSlide; j++) {
+        if (i + j >= daysToShow) break;
+        let date = addDays(today, i + j);
+        slots.push(
+          <div
+            onClick={() => {
+              handleNgayBay(i, j);
+              handleDivNgayBayClick((i / slotsPerSlide) * slotsPerSlide + j);
+            }}
+            className={`text-white text-center text-sm font-semibold p-1 ${clickedNgayBay?.[0] === i && clickedNgayBay?.[1] === j ? "bg-[#FFFFFF33] rounded-md" : ""} hover:bg-[#FFFFFF33] hover:rounded-md cursor-pointer`}
+          >
+            <div
+              ref={(el) =>
+                (ngayBayRef.current[(i / slotsPerSlide) * slotsPerSlide + j] =
+                  el)
+              }
+              className="line-clamp-1"
+            >
+              {format(date, "EEEE, d 'thg' M yyyy", { locale: vi })}
+            </div>
+            <span className="line-clamp-1 mt-[2%]">
+              {formatCurrency(2000000)}
+            </span>
+          </div>
+        );
+      }
+      slides.push(
+        <div className="flex justify-evenly items-center h-full">{slots}</div>
+      );
+    }
+    return slides;
+  };
+
+  const slides = createDateSlides();
+
+  const properties = {
+    autoplay: false,
+    prevArrow: (
+      <div
+        onClick={() => setCurrentSlide(currentSlide - 1)}
+        disabled={currentSlide === 0}
+        className={`absolute top-1/2 left-0 transform -translate-y-1/2 text-white text-xl ${currentSlide === 0 ? "hidden" : "visible"}`}
+      >
+        &#10094;
+      </div>
+    ),
+    nextArrow: (
+      <div
+        type="button"
+        onClick={() => setCurrentSlide(currentSlide + 1)}
+        disabled={currentSlide === slides.length - 1}
+        className={`absolute top-1/2 right-0 transform -translate-y-1/2 text-white text-xl ${currentSlide === slides.length - 1 ? "hidden" : "visible"}`}
+      >
+        &#10095;
+      </div>
+    ),
+    onChange: (oldIndex, newIndex) => {
+      setCurrentSlide(newIndex);
+    },
+  };
+
+  //lọc min
+  const [isLocMinClicked, setLocMinClicked] = useState([false, false, false]);
+  const handleLocMinClicked = (index) => {
+    setLocMinClicked((prevState) => {
+      const newState = [...prevState];
+      newState[index] = isLocMinClicked[index] ? false : true;
+      return newState;
+    });
+  };
+  const [clickOption, setClickOption] = useState("Khác");
+  const handleClickOption = (text) => {
+    setClickOption(text);
+    setLocMinClicked((prevState) => {
+      const newState = [...prevState];
+      newState[2] = isLocMinClicked[2] ? false : true;
+      return newState;
+    });
+  };
+
+  //Xem chi tiết
+  let arrayXemChiTiet = [false, false, false];
+  const [xemChiTiet, setXemChiTiet] = useState(arrayXemChiTiet);
+  const handleXemChiTiet = (index) => {
+    setXemChiTiet((prevState) => {
+      const newState = [...prevState];
+      for (let i = 0; i < newState.length; i++) {
+        if (i === index) {
+          newState[i] = xemChiTiet[i] ? false : true;
+        } else {
+          newState[i] = false;
+        }
+      }
+      return newState;
+    });
+  };
+
   return (
-    <div className="w-full h-full flex flex-row justify-center bg-slate-100">
+    <div className="w-full h-fit flex flex-row justify-center bg-slate-100">
       <div id="left" className="flex flex-col items-center w-[25%]">
         <div id="Khuyen-mai">
           <div className="flex flex-row items-center mt-4">
@@ -107,10 +295,16 @@ export default function XemDanhSachChuyenBay() {
                 />
               </div>
               <div className="flex flex-row justify-between w-full bg-[#f7f9fa] border-[#687176] border-2 p-2 rounded-md border-dotted mt-2">
-                <span className="text-sm font-semibold text-[#687176]">
+                <span
+                  ref={copyRefVoucher}
+                  className="text-sm font-semibold text-[#687176]"
+                >
                   PAYLATER
                 </span>
-                <span className="text-sm font-semibold text-[#0194f3] cursor-pointer">
+                <span
+                  onClick={copyToClipboard}
+                  className="text-sm font-semibold text-[#0194f3] cursor-pointer"
+                >
                   Sao chép
                 </span>
               </div>
@@ -243,9 +437,12 @@ export default function XemDanhSachChuyenBay() {
       </div>
       <div
         id="right"
-        className="ml-5 flex flex-col items-center w-[40%] border-2 overflow-hidden"
+        className="ml-5 flex flex-col items-center w-[45%] overflow-hidden"
       >
-        <div className="relative w-full">
+        <div
+          id="Chinh-sua-ngay"
+          className="relative w-full h-fit flex items-center justify-center"
+        >
           <svg
             viewBox="0 0 672 185"
             fill="none"
@@ -339,19 +536,19 @@ export default function XemDanhSachChuyenBay() {
           <div
             onMouseEnter={() => setAdjustHovered(true)}
             onMouseLeave={() => setAdjustHovered(false)}
-            className={`${isAjustHovered ? "w-[80%]" : "w-[60%]"} bg-white w-[60%] py-3 px-5 rounded-3xl absolute z-10 top-[4%] left-[1%] transform translate-x-0 div-flex-adjust-justify-between`}
+            className={`${isAjustHovered ? "w-[80%]" : "w-[60%]"} max-h-[45%] bg-white w-[60%] py-3 px-5 rounded-3xl absolute z-10 top-[4%] left-[1%] transform translate-x-0 div-flex-adjust-justify-between`}
           >
             <div>
               <p className="text-lg font-bold leading-[30px] line-clamp-1">
                 TP HCM (SGN) → Tokyo (TYOA)
               </p>
               <span className="text-base font-semibold text-[#687176] leading-[35px]">
-                Thứ 6, 28 thg 6 2024
+                {switchNgayBay}
               </span>
             </div>
             {isAjustHovered ? (
               <span
-                className={`text-base font-semibold text-[#0194f3] cursor-pointer`}
+                className={`text-base font-semibold text-zinc-800 hover:text-[#0194f3] cursor-pointer`}
               >
                 Đổi tìm kiếm
               </span>
@@ -376,11 +573,229 @@ export default function XemDanhSachChuyenBay() {
               ></path>
             </svg>
           </div>
-          <Slide className="slid">
-            <div className="each-slide-effect">
-              <div>alo</div>
+          <div className="bg-[#0264C8] m-[1%] rounded-2xl flex justify-center items-center absolute bottom-[7%] z-10 w-[98%] h-[35%]">
+            <div className="px-[1%] w-[93%] h-fit">
+              <Slide {...properties}>{slides}</Slide>
             </div>
-          </Slide>
+            <div className="flex justify-center items-center right-0 w-[7%] h-full">
+              <svg
+                width="50%"
+                height="50%"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                data-id="IcSystemCalendarFill"
+                className="cursor-pointer"
+                onClick={handleSVGClick}
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M2 6C2 4.34315 3.34315 3 5 3H6V2C6 1.44772 6.44772 1 7 1C7.55228 1 8 1.44772 8 2V3H16V2C16 1.44772 16.4477 1 17 1C17.5523 1 18 1.44772 18 2V3H19C20.6569 3 22 4.34315 22 6V19C22 20.6569 20.6569 22 19 22H5C3.34315 22 2 20.6569 2 19V6ZM4 6V7H20V6C20 5.44772 19.5523 5 19 5H18C18 5.55228 17.5523 6 17 6C16.4477 6 16 5.55228 16 5H8C8 5.55228 7.55228 6 7 6C6.44772 6 6 5.55228 6 5H5C4.44772 5 4 5.44772 4 6ZM6.5 10.5C5.94772 10.5 5.5 10.9477 5.5 11.5V12.5C5.5 13.0523 5.94772 13.5 6.5 13.5H7.5C8.05228 13.5 8.5 13.0523 8.5 12.5V11.5C8.5 10.9477 8.05228 10.5 7.5 10.5H6.5ZM11.5 10.5C10.9477 10.5 10.5 10.9477 10.5 11.5V12.5C10.5 13.0523 10.9477 13.5 11.5 13.5H12.5C13.0523 13.5 13.5 13.0523 13.5 12.5V11.5C13.5 10.9477 13.0523 10.5 12.5 10.5H11.5ZM16.5 10.5C15.9477 10.5 15.5 10.9477 15.5 11.5V12.5C15.5 13.0523 15.9477 13.5 16.5 13.5H17.5C18.0523 13.5 18.5 13.0523 18.5 12.5V11.5C18.5 10.9477 18.0523 10.5 17.5 10.5H16.5ZM6.5 15.5C5.94772 15.5 5.5 15.9477 5.5 16.5V17.5C5.5 18.0523 5.94772 18.5 6.5 18.5H7.5C8.05228 18.5 8.5 18.0523 8.5 17.5V16.5C8.5 15.9477 8.05228 15.5 7.5 15.5H6.5ZM11.5 15.5C10.9477 15.5 10.5 15.9477 10.5 16.5V17.5C10.5 18.0523 10.9477 18.5 11.5 18.5H12.5C13.0523 18.5 13.5 18.0523 13.5 17.5V16.5C13.5 15.9477 13.0523 15.5 12.5 15.5H11.5Z"
+                  fill="#FFFFFF"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div className="absolute top-[89%] z-10 right-0">
+            {showDatePicker && (
+              <DatePicker
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                onChange={handleDateSelect}
+                dateFormat="EEEE, dd MMM yyyy"
+                inline
+              />
+            )}
+          </div>
+        </div>
+        <div
+          id="Loc-min"
+          className="relative div-flex-adjust-justify-between border-2 h-[9%] w-full rounded-xl p-[1%] bg-white"
+        >
+          <div
+            onClick={() => handleLocMinClicked(0)}
+            className={`${isLocMinClicked[0] && "bg-[#e6e7e7]"} flex flex-col justify-center rounded-xl items-center h-full  w-[33%] cursor-pointer hover:border-[1px] hover:border-[#109AF4]`}
+          >
+            <span className="text-[#109AF4] font-medium">Giá thấp nhất</span>
+            <span className="text-[#687176] font-medium text-sm">
+              {formatCurrency(6000000)}
+            </span>
+          </div>
+          <div
+            onClick={() => handleLocMinClicked(1)}
+            className={`${isLocMinClicked[1] && "bg-[#e6e7e7]"} flex flex-col justify-center rounded-xl items-center h-full  w-[33%] cursor-pointer hover:border-[1px] hover:border-[#109AF4]`}
+          >
+            <span className="text-[#109AF4] font-medium">
+              Thời gian bay ngắn nhất
+            </span>
+            <span className="text-[#687176] font-medium text-sm">
+              {formatCurrency(6000000)}
+            </span>
+          </div>
+          <div
+            onClick={() => handleLocMinClicked(2)}
+            className={`${isLocMinClicked[2] && "bg-[#e6e7e7]"} flex flex-row justify-center rounded-xl items-center h-full w-[33%] cursor-pointer hover:border-[1px] hover:border-[#109AF4]`}
+          >
+            <svg
+              width="20%"
+              height="60%"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              data-id="IcSystemToolSort"
+            >
+              <path
+                d="M3 6H15.5M3 12H12.5M3 18H9"
+                stroke="#687176"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M19 6V19.5M19 19.5L16.5 17M19 19.5L21.5 17"
+                stroke="#0194F3"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+            <span className="text-[#687176] font-medium">{clickOption}</span>
+            <svg
+              width="11%"
+              height="50%"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              data-id="IcSystemChevronUp"
+              className={`${isLocMinClicked[2] ? "rotate-0" : "rotate-180"}`}
+            >
+              <path
+                d="M6 15L12 9L18 15"
+                stroke="#687176"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </div>
+          {isLocMinClicked[2] && (
+            <div className="flex flex-col bg-white w-[32%] border-2 absolute right-0 top-[90%] z-20 rounded-xl">
+              <span
+                onClick={() => handleClickOption("Cất cánh sớm nhất")}
+                className="p-[4%] border-b-[1px] cursor-pointer hover:bg-[#F7F9FA]"
+              >
+                Cất cánh sớm nhất
+              </span>
+              <span
+                onClick={() => handleClickOption("Cất cánh muộn nhất")}
+                className="p-[4%] border-b-[1px] cursor-pointer hover:bg-[#F7F9FA]"
+              >
+                Cất cánh muộn nhất
+              </span>
+              <span
+                onClick={() => handleClickOption("Hạ cánh sớm nhất")}
+                className="p-[4%] border-b-[1px] cursor-pointer hover:bg-[#F7F9FA]"
+              >
+                Hạ cánh sớm nhất
+              </span>
+              <span
+                onClick={() => handleClickOption("Hạ cánh muộn nhất")}
+                className="p-[4%] border-b-[1px] cursor-pointer hover:bg-[#F7F9FA]"
+              >
+                Hạ cánh muộn nhất
+              </span>
+              <span
+                onClick={() => handleClickOption("Khác")}
+                className="p-[4%] border-b-[1px] cursor-pointer hover:bg-[#F7F9FA]"
+              >
+                Không lọc
+              </span>
+            </div>
+          )}
+        </div>
+        <div
+          id="Danh-sach-chuyen-bay"
+          className="flex flex-col h-fit w-full mt-[2%] "
+        >
+          {Array.from({ length: 3 }, (_, i) => (
+            <div
+              onClick={() => handleXemChiTiet(i)}
+              className="cursor-pointer mb-[2%] hover:border-[1px] hover:border-[#109AF4] hover:rounded-xl"
+            >
+              <div className="div-flex-adjust-justify-between rounded-xl bg-white p-[2%]">
+                <div className="flex flex-row items-center text-2xl font-semibold">
+                  <div className="flex flex-col items-center">
+                    <span>12:20</span>
+                    <span className="text-sm font-semibold text-[#687176]">
+                      SGN
+                    </span>
+                  </div>
+                  <div className="flex flex-col h-fit items-center w-fit ">
+                    <span className="text-sm font-semibold text-[#687176]">
+                      20h 10m
+                    </span>
+                    <div className="flex flex-row items-center w-fit">
+                      <div className="w-[12px] md:w-[24px] h-[12px] md:h-[24px] border-2 border-[#687172] rounded-full"></div>
+                      <div className="w-[30px] md:w-[70px] h-fit border-[1px] border-[#687172]"></div>
+                      <div className="w-[12px] md:w-[24px] h-[12px] md:h-[24px] border-2 border-[#687172] bg-[#687172] rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span>10:30</span>
+                    <span className="text-sm font-semibold text-[#687176]">
+                      SG
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end text-xl font-bold text-[#FF5E1F]">
+                  <span>
+                    {formatCurrency(6666760)}
+                    <span className="text-sm font-semibold text-[#687176]">
+                      /khách
+                    </span>
+                  </span>
+                  <div className="bg-[#0194F3] text-white w-fit h-fit px-[15px] py-[2px]  lg:px-[35px] lg:py-[7px] mt-[30px] rounded-lg">
+                    Chọn
+                  </div>
+                </div>
+              </div>
+              {xemChiTiet[i] && (
+                <div className="flex flex-row justify-start items-center rounded-b-xl bg-[#F7F9FA] p-[2%] text-lg font-semibold">
+                  <div className="flex flex-col justify-between h-120 md:h-[250px]">
+                    <div className="flex flex-col">
+                      <span>16:30</span>
+                      <span className="text-sm font-semibold text-[#687176]">
+                        {formatDate(new Date())}
+                      </span>
+                    </div>
+                    <span className="text-sm font-semibold text-[#687176]">
+                      20h 10m
+                    </span>
+                    <div className="flex flex-col">
+                      <span>07:40</span>
+                      <span className="text-sm font-semibold text-[#687176]">
+                        {formatDate(new Date())}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-center items-center h-fit">
+                    <div className="w-[12px] md:w-[24px] h-[12px] md:h-[24px] border-2 border-[#109AF4] rounded-full"></div>
+                    <div className="h-[94px] md:h-[200px] w-fit border-[1px] border-[#687172]"></div>
+                    <div className="w-[12px] md:w-[24px] h-[12px] md:h-[24px] border-2 border-[#109AF4] bg-[#109AF4] rounded-full"></div>
+                  </div>
+                  <div className="flex flex-col justify-between h-120 md:h-[250px]">
+                    <span>TP HCM(SGN)</span>
+                    <span className="flex flex-row text-sm font-bold text-[#109AF4]">
+                      <img src="	https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/8/8c1bcc90ebe8e4f79eafc4270ec3dbcb.svg" />
+                      Xem giá hành lý mua thêm
+                    </span>
+                    <span>Singaport</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -392,3 +807,15 @@ function formatCurrency(amount) {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return parts.join(".") + " VND";
 }
+
+function parseVietnameseDate(dateString) {
+  const parsedDate = parse(dateString, "EEEE, d 'thg' M yyyy", new Date(), {
+    locale: vi,
+  });
+  return parsedDate;
+}
+
+const formatDate = (date) => {
+  const options = { day: "2-digit", month: "short" };
+  return date.toLocaleDateString("en-GB", options).replace(".", "");
+};
