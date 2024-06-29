@@ -1,17 +1,21 @@
-import { useRef, useState } from "react";
-import Header from "./Header.js";
 import Footer from "./Footer.js";
+import { useRef, useState, useContext } from "react";
+import Header from "./Header.js";
+import { Login } from "./Login.js";
+import { CONTEXT } from "../Context/WindowLogin.js";
+// import { LoginSuccess } from "./StateLoginSucces.js";
 
 function Home() {
   //khứ hồi
-  const [isState, setState] = useState("bg-gray-400 pointer-events-none");
+  const [isStateCheckbox, setStateCheckbox] = useState(
+    "bg-gray-400 pointer-events-none select-none"
+  );
   const handle = () => {
-    setState(
-      isState == "bg-gray-400 pointer-events-none"
+    setStateCheckbox(
+      isStateCheckbox == "bg-gray-400 pointer-events-none select-none"
         ? "bg-white"
-        : "bg-gray-400 pointer-events-none"
+        : "bg-gray-400 pointer-events-none select-none"
     );
-    console.log(isState);
   };
 
   //get text
@@ -35,13 +39,16 @@ function Home() {
     );
   };
 
+  const { isState } = useContext(CONTEXT);
+
   return (
-    <div>
-      {/* <Login /> */}
+    <>
+      {isState && <Login />}
       <div className="relative h-screen w-screen bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')] bg-cover bg-center bg-no-repeat p-0">
         <Header />
+        {/* <LoginSuccess /> */}
         {/* div2 */}
-        <div className="flex flex-col items-center justify-evenly lg:flex-row">
+        <div className="flex min-h-96 flex-col items-center justify-evenly lg:flex-row">
           {/* sân bay */}
           <div className="relative flex w-[80%] flex-row lg:w-[42%]">
             <div className="w-[50%]">
@@ -205,7 +212,7 @@ function Home() {
                 </label>
               </div>
               <div
-                className={`flex w-full flex-row items-center justify-evenly rounded-r-2xl border-y-4 border-r-4 border-[#cdd0d1] p-4 pl-8 text-[25px] ${isState}`}
+                className={`flex w-full flex-row items-center justify-evenly rounded-r-2xl border-y-4 border-r-4 border-[#cdd0d1] p-4 pl-8 text-[25px] ${isStateCheckbox}`}
               >
                 <label htmlFor="ngay-ve-select">
                   <svg
@@ -234,12 +241,12 @@ function Home() {
                     ></path>
                   </svg>
                 </label>
-                <input type="date" className={`${isState}`} />
+                <input type="date" className={`${isStateCheckbox}`} />
               </div>
             </div>
           </div>
           {/* Tìm */}
-          <button className="m-[15px] rounded-2xl border-4 border-[rgba(205,208,209,0.50)] bg-[#ff5e1f] p-5 lg:m-0 lg:self-end">
+          <button className="m-[15px] rounded-2xl border-4 border-[rgba(205,208,209,0.50)] bg-[#ff5e1f] p-5 lg:m-0 lg:w-auto lg:self-end">
             <svg
               width="24"
               height="24"
@@ -258,9 +265,9 @@ function Home() {
             </svg>
           </button>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 }
 

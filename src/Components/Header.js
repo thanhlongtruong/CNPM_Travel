@@ -1,14 +1,25 @@
+import { useContext } from 'react';
+import { CONTEXT } from '../Context/WindowLogin';
+
 function Header() {
+  const { handState } = useContext(CONTEXT);
+
   return (
-    <div className="div-flex-adjust-justify-between w-full bg-transparent p-4 text-[20px] border-b-[0.5px] border-gray-600">
+    <div className="div-flex-adjust-justify-between w-full border-b-[0.5px] border-gray-600 bg-transparent p-4 text-[20px]">
       <a href="#">
-        <img src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/f/fbab4f587da2242fbe9858fe3e5ba717.svg" />
+        <img
+          alt=""
+          src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/f/fbab4f587da2242fbe9858fe3e5ba717.svg"
+        />
       </a>
       <div className="div-flex-adjust-justify-between w-fit gap-x-10">
         <a href="#" className="text-white">
           Đặt chỗ của tôi
         </a>
-        <button className="content_center border-2 border-white text-white rounded-md flex flex-row p-[10px]">
+        <button
+          className="content_center flex flex-row rounded-md border-2 border-white p-[10px] text-white"
+          onClick={handState}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -26,7 +37,7 @@ function Header() {
           Đăng nhập
         </button>
 
-        <button className="bg-[#0194f3] text-white rounded-md p-[10px]">
+        <button className="rounded-md bg-[#0194f3] p-[10px] text-white" onClick={handState}>
           Đăng ký
         </button>
       </div>
