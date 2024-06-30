@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from "react";
 
 export const CONTEXT = createContext({});
 export const OrderProvider = ({ children }) => {
@@ -8,5 +8,9 @@ export const OrderProvider = ({ children }) => {
     setState(!isState);
   };
 
-  return <CONTEXT.Provider value={{ isState, setState, handState }}>{children}</CONTEXT.Provider>;
+  return (
+    <CONTEXT.Provider value={{ isState, setState, handState }}>
+      {children}
+    </CONTEXT.Provider>
+  );
 };
