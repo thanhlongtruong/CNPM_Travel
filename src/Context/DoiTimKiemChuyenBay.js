@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useRef } from "react";
 import { format, addDays, parse } from "date-fns";
 import { vi } from "date-fns/locale";
 
@@ -25,6 +25,22 @@ export const OrderProvider = ({ children }) => {
     console.log(isBay + " - " + isDap + " - " + switchNgayBay);
   };
 
+  //clone block html dựa vào ref
+  const blockRef = useRef([]);
+  const [clonedBlock, setClonedBlock] = useState(null);
+  const handleClonedBlock = (index) => {
+    if (blockRef.current[index]) {
+      const blockElement = blockRef.current[index].cloneNode(true);
+      setClonedBlock(blockElement);
+    }
+  };
+
+  //open dialog chỉnh số lượng và hạng
+  const [isChonMuaClick, setChonMuaClick] = useState(false);
+  const handleChonMuaClick = () => {
+    setChonMuaClick(!isChonMuaClick);
+  };
+
   return (
     <CONTEXT.Provider
       value={{
@@ -39,6 +55,11 @@ export const OrderProvider = ({ children }) => {
         setToday,
         setSwitchNgayBay,
         switchNgayBay,
+        isChonMuaClick,
+        handleChonMuaClick,
+        blockRef,
+        clonedBlock,
+        handleClonedBlock,
       }}
     >
       {children}

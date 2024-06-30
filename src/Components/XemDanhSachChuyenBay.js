@@ -9,6 +9,7 @@ import { vi } from "date-fns/locale";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DoiTimKiemChuyenBay from "./DoiTimKiemChuyenBay.js";
+import ChinhSoLuongVaHangVeTaiCB from "./ChinhSoLuongVaHangVeTaiCB.js";
 import { CONTEXT } from "../Context/DoiTimKiemChuyenBay.js";
 
 export default function XemDanhSachChuyenBay() {
@@ -22,6 +23,11 @@ export default function XemDanhSachChuyenBay() {
     setToday,
     switchNgayBay,
     setSwitchNgayBay,
+    isChonMuaClick,
+    handleChonMuaClick,
+    blockRef,
+    clonedBlock,
+    handleClonedBlock,
   } = useContext(CONTEXT);
 
   //Copy mã voucher
@@ -249,8 +255,9 @@ export default function XemDanhSachChuyenBay() {
   };
 
   return (
-    <div className="relative w-full h-fit flex flex-row justify-center bg-slate-100">
+    <div className="relative w-full min-h-[100vh] h-full flex flex-row justify-center bg-slate-100">
       {dialogDoiTimKiem && <DoiTimKiemChuyenBay />}
+      {isChonMuaClick && <ChinhSoLuongVaHangVeTaiCB />}
       <div id="left" className="flex flex-col items-center w-[25%]">
         <div id="Khuyen-mai">
           <div className="flex flex-row items-center mt-4">
@@ -653,7 +660,7 @@ export default function XemDanhSachChuyenBay() {
           </div>
           <div
             onClick={() => handleLocMinClicked(2)}
-            className={`${isLocMinClicked[2] && "bg-[#e6e7e7]"} flex flex-row justify-center rounded-xl items-center h-full w-[33%] cursor-pointer hover:border-[1px] hover:border-[#109AF4]`}
+            className={`${isLocMinClicked[2] && "bg-[#e6e7e7]"} flex flex-row justify-center rounded-xl items-center h-full w-[33%] cursor-pointer border-[1px] border-white hover:border-[#109AF4]`}
           >
             <svg
               width="20%"
@@ -739,9 +746,10 @@ export default function XemDanhSachChuyenBay() {
           {Array.from({ length: 3 }, (_, i) => (
             <div
               onClick={() => handleXemChiTiet(i)}
-              className="cursor-pointer mb-[2%] hover:border-[1px] hover:border-[#109AF4] hover:rounded-xl"
+              className="cursor-pointer mb-[2%] border-[1px] border-white hover:border-[#109AF4] hover:rounded-xl"
             >
               <div
+                ref={(el) => (blockRef.current[i] = el)}
                 className={`div-flex-adjust-justify-between ${xemChiTiet[i] ? "rounded-t-xl" : "rounded-xl"} bg-white p-[2%]`}
               >
                 <div className="flex flex-row items-center text-2xl font-semibold">
@@ -775,7 +783,13 @@ export default function XemDanhSachChuyenBay() {
                       /khách
                     </span>
                   </span>
-                  <div className="bg-[#0194F3] text-white w-fit h-fit px-[15px] py-[2px]  lg:px-[35px] lg:py-[7px] mt-[30px] rounded-lg">
+                  <div
+                    onClick={() => {
+                      handleChonMuaClick();
+                      handleClonedBlock(i);
+                    }}
+                    className="bg-[#0194F3] text-white w-fit h-fit px-[15px] py-[2px]  lg:px-[35px] lg:py-[7px] mt-[30px] rounded-lg"
+                  >
                     Chọn
                   </div>
                 </div>
@@ -822,7 +836,7 @@ export default function XemDanhSachChuyenBay() {
   );
 }
 
-function formatCurrency(amount) {
+export function formatCurrency(amount) {
   const parts = amount.toString().split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   return parts.join(".") + " VND";

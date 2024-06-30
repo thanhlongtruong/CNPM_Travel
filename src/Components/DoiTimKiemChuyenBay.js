@@ -20,6 +20,7 @@ export default function DoiTimKiemChuyenBay() {
     setBay,
     isDap,
     setDap,
+    dialogDoiTimKiem,
     handleDialogDoiTimKiem,
     setDialogDoiTimKiem,
     today,
@@ -79,13 +80,24 @@ export default function DoiTimKiemChuyenBay() {
     );
   };
 
+  //Unscrollable screen
+  useEffect(() => {
+    // Disable scrolling
+    document.body.style.overflow = "hidden";
+
+    // Clean up by re-enabling scrolling when the component is unmounted
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
-    <div className="absolute z-[25] w-full h-full">
+    <div className="fixed top-0 z-[25] w-full h-full">
       <div
         onClick={() => setDialogDoiTimKiem(false)}
         className="absolute z-[25] w-full h-full bg-black/50"
       ></div>
-      <div className="w-[50%] z-30 h-fit rounded-xl p-[1%] bg-white absolute top-[15%] left-[25%] transform translate-x-0 translate-y-0 flex flex-col items-center">
+      <div className="w-[50%] z-30 h-fit rounded-xl p-[1%] bg-white fixed top-[25%] left-[25%] transform translate-x-0 translate-y-0 flex flex-col items-center">
         {/* sân bay */}
         <div className="w-[90%] flex flex-row relative">
           <div className="w-[50%]">
