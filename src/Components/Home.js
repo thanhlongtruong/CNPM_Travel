@@ -7,28 +7,36 @@ import { LoginSuccess } from './StateLoginSucces.js';
 
 function Home() {
   //khứ hồi
-  const [isStateCheckbox, setStateCheckbox] = useState('bg-gray-400 pointer-events-none select-none');
+  const [isStateCheckbox, setStateCheckbox] = useState(
+    "bg-gray-400 pointer-events-none select-none"
+  );
   const handle = () => {
     setStateCheckbox(
-      isStateCheckbox == 'bg-gray-400 pointer-events-none select-none'
-        ? 'bg-white'
-        : 'bg-gray-400 pointer-events-none select-none',
+      isStateCheckbox == "bg-gray-400 pointer-events-none select-none"
+        ? "bg-white"
+        : "bg-gray-400 pointer-events-none select-none"
     );
   };
 
   //get text
   const selectRefBay = useRef(null);
-  const [isBay, setBay] = useState('');
+  const [isBay, setBay] = useState("");
   const selectRefDap = useRef(null);
-  const [isDap, setDap] = useState('');
+  const [isDap, setDap] = useState("");
   const handleSwap = () => {
-    const temp = selectRefBay.current.options[selectRefBay.current.selectedIndex].text;
+    const temp =
+      selectRefBay.current.options[selectRefBay.current.selectedIndex].text;
     selectRefBay.current.options[selectRefBay.current.selectedIndex].text =
       selectRefDap.current.options[selectRefDap.current.selectedIndex].text;
-    selectRefDap.current.options[selectRefDap.current.selectedIndex].text = temp;
+    selectRefDap.current.options[selectRefDap.current.selectedIndex].text =
+      temp;
 
-    setBay(selectRefBay.current.options[selectRefBay.current.selectedIndex].text);
-    setDap(selectRefDap.current.options[selectRefDap.current.selectedIndex].text);
+    setBay(
+      selectRefBay.current.options[selectRefBay.current.selectedIndex].text
+    );
+    setDap(
+      selectRefDap.current.options[selectRefDap.current.selectedIndex].text
+    );
   };
 
   const { isState } = useContext(CONTEXT);
@@ -38,7 +46,9 @@ function Home() {
       {isState && <Login />}
       <div className="relative h-screen w-screen bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')] bg-cover bg-center bg-no-repeat p-0">
         <Header />
+
         <LoginSuccess />
+
         {/* div2 */}
         <div className="flex min-h-96 flex-col items-center justify-evenly lg:flex-row">
           {/* sân bay */}
@@ -76,7 +86,13 @@ function Home() {
                 <select
                   ref={selectRefBay}
                   value={isBay}
-                  onChange={() => setBay(selectRefBay.current.options[selectRefBay.current.selectedIndex].text)}
+                  onChange={() =>
+                    setBay(
+                      selectRefBay.current.options[
+                        selectRefBay.current.selectedIndex
+                      ].text
+                    )
+                  }
                   id="bay-select"
                   className="max-w-[70%] appearance-none text-left"
                 >
@@ -119,7 +135,13 @@ function Home() {
                 <select
                   ref={selectRefDap}
                   value={isDap}
-                  onChange={() => setBay(selectRefDap.current.options[selectRefDap.current.selectedIndex].text)}
+                  onChange={() =>
+                    setBay(
+                      selectRefDap.current.options[
+                        selectRefDap.current.selectedIndex
+                      ].text
+                    )
+                  }
                   id="dap-select"
                   className="max-w-[70%] appearance-none text-left"
                 >
@@ -177,9 +199,17 @@ function Home() {
             </div>
             <div className="w-[50%]">
               <div className="w-fit flex-row">
-                <input id="khu_hoi_check" type="checkbox" onClick={handle} className="size-4" />
+                <input
+                  id="khu_hoi_check"
+                  type="checkbox"
+                  onClick={handle}
+                  className="size-4"
+                />
                 &nbsp;
-                <label htmlFor="khu_hoi_check" className="text-[20px] text-white">
+                <label
+                  htmlFor="khu_hoi_check"
+                  className="text-[20px] text-white"
+                >
                   Khứ hồi
                 </label>
               </div>
