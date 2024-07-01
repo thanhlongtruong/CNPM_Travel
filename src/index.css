@@ -16,7 +16,16 @@ code {
 }
 
 .div-flex-adjust-justify-between {
-  @apply flex flex-row justify-between items-center;
+  @apply flex flex-row items-center justify-between;
+}
+.styleLogin_btnGoogleFace {
+  @apply mt-4 h-fit w-full rounded-md border-2 border-cyan-500 p-2 text-center font-semibold text-cyan-400;
+}
+.center {
+  @apply flex items-center justify-center;
+}
+.optionWhenLoginSuccess {
+  @apply h-[30%] w-full font-semibold hover:bg-sky-50;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
