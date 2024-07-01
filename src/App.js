@@ -8,14 +8,21 @@ import XemDanhSachChuyenBay from "./Components/XemDanhSachChuyenBay.js";
 import DoiTimKiemChuyenBay from "./Components/DoiTimKiemChuyenBay.js";
 
 import { Setting } from "./Components/Setting.js";
+// function App() {
+//   return (
+//     <Routes>
+//       <Route path="/HomePage" element={<XemDanhSachChuyenBay />} />
+//       <Route path="/Setting/InfoAccount" element={<Setting />} />
+//       <Route path="/Setting/HistoryTicket" element={<Setting />} />
+//     </Routes>
+//   );
+// }
 function App() {
   return (
-    <Routes>
-      <Route path="/HomePage" element={<Home />} />
-      <Route path="/Setting/InfoAccount" element={<Setting />} />
-      <Route path="/Setting/HistoryTicket" element={<Setting />} />
-    </Routes>
-
+    <div>
+      <Header />
+      <XemDanhSachChuyenBay />
+    </div>
   );
 }
 
