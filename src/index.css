@@ -27,19 +27,3 @@ code {
 .optionWhenLoginSuccess {
   @apply h-[30%] w-full font-semibold hover:bg-sky-50;
 }
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.full-screen-component {
-  width: 100vw;
-  height: 100vh;
-}
