@@ -1,9 +1,9 @@
-import Footer from './Footer.js';
-import { useRef, useState, useContext } from 'react';
-import Header from './Header.js';
-import { Login } from './Login.js';
-import { CONTEXT } from '../Context/WindowLogin.js';
-import { LoginSuccess } from './StateLoginSucces.js';
+import Footer from "./Footer.js";
+import { useRef, useState, useContext } from "react";
+import Header from "./Header.js";
+import { Login } from "./Login.js";
+import { CONTEXT } from "../Context/WindowLogin.js";
+import { LoginSuccess } from "./StateLoginSucces.js";
 
 function Home() {
   //khứ hồi
