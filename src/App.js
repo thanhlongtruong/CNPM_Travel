@@ -14,6 +14,7 @@ import { Setting } from "./Components/Setting.js";
 // }
 function App() {
   return (
+<<<<<<< HEAD
     <Routes>
       <Route path="/HomePage" element={<Home />} />
       <Route path="/Setting/InfoAccount" element={<Setting />} />
@@ -24,6 +25,12 @@ function App() {
     //   <Header />
     //   <XemDanhSachChuyenBay />
     // </div>
+=======
+    <div>
+      <Header />
+      <XemDanhSachChuyenBay />
+    </div>
+>>>>>>> d93ff91 (file kiet done)
   );
 }
 
