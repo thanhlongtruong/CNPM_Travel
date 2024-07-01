@@ -1,3 +1,4 @@
+
 import Footer from './Footer.js';
 import { useRef, useState, useContext } from 'react';
 import Header from './Header.js';
@@ -10,6 +11,7 @@ function Home() {
   const [isStateCheckbox, setStateCheckbox] = useState(
     "bg-gray-400 pointer-events-none select-none"
   );
+
   const handle = () => {
     setStateCheckbox(
       isStateCheckbox == "bg-gray-400 pointer-events-none select-none"
@@ -18,7 +20,7 @@ function Home() {
     );
   };
 
-  //get text
+  //swap bay - dap
   const selectRefBay = useRef(null);
   const [isBay, setBay] = useState("");
   const selectRefDap = useRef(null);
@@ -42,6 +44,7 @@ function Home() {
   const { isState } = useContext(CONTEXT);
 
   return (
+
     <>
       {isState && <Login />}
       <div className="relative h-screen w-screen bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')] bg-cover bg-center bg-no-repeat p-0">
@@ -101,6 +104,7 @@ function Home() {
                   <option>Sân bay Nội Bài</option>
                 </select>
               </div>
+
             </div>
             <div className="w-[50%]">
               <span className="text-[20px] text-white">Đến</span>
@@ -145,20 +149,69 @@ function Home() {
                   id="dap-select"
                   className="max-w-[70%] appearance-none text-left"
                 >
-                  <option>Sân bay Tokyo</option>
-                  <option>Sân bay Los Angeles</option>
-                  <option>Sân bay Thượng Hải</option>
-                </select>
-              </div>
+
+                  <path
+                    d="M3 21H21"
+                    stroke="#0194f3"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M12 9L15.1924 7.93585C17.317 7.22767 19.6563 7.95843 21 9.75L7.44513 14.0629C5.86627 14.5653 4.1791 13.6926 3.67674 12.1137C3.66772 12.0854 3.65912 12.0569 3.65094 12.0283L3 9.75L5.25 10.875L9 9.75L4.5 3H5.25L12 9Z"
+                    stroke="#0194f3"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </svg>
+              </label>
+              <select
+                ref={selectRefDap}
+                onChange={() =>
+                  setBay(
+                    selectRefDap.current.options[
+                      selectRefDap.current.selectedIndex
+                    ].text
+                  )
+                }
+                id="dap-select"
+                className="appearance-none text-left max-w-[70%]"
+              >
+                <option>Sân bay Tokyo</option>
+                <option>Sân bay Los Angeles</option>
+                <option>Sân bay Thượng Hải</option>
+              </select>
             </div>
-            <button
-              onClick={handleSwap}
-              className="absolute bottom-[14%] left-[50%] translate-x-[-50%] transform rounded-full border-2 border-[#cdd0d1] bg-white"
-            >
-              <img
-                alt=""
-                className="p-2"
-                src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/3/331a92149a02dc615986206c588d6642.svg"
+          </div>
+          <button
+            onClick={handleSwap}
+            className="absolute bottom-[14%] left-[50%] transform translate-x-[-50%] bg-white rounded-full border-2  border-[#cdd0d1]"
+          >
+            <img
+              className="p-2"
+              src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/3/331a92149a02dc615986206c588d6642.svg"
+            />
+          </button>
+        </div>
+        {/* ngày */}
+        <div className="w-[80%] lg:w-[42%] flex flex-row">
+          <div className="w-[50%]">
+            <span className="text-white text-[20px]">Ngày đi</span>
+            <div className="flex flex-row justify-evenly items-center w-full rounded-l-2xl p-4 text-[25px] border-y-4 border-l-4 border-r-2 border-[#cdd0d1] bg-white">
+              <input type="date" />
+            </div>
+          </div>
+          <div className="w-[50%]">
+            <div className="flex-row w-fit line-clamp-1">
+              <input
+                id="khu_hoi_check"
+                type="checkbox"
+                onClick={handle}
+                className="h-[22px]"
+
               />
             </button>
           </div>
@@ -197,6 +250,7 @@ function Home() {
                 <input type="date" />
               </div>
             </div>
+
             <div className="w-[50%]">
               <div className="w-fit flex-row">
                 <input
@@ -245,6 +299,7 @@ function Home() {
                 </label>
                 <input type="date" className={`${isStateCheckbox}`} />
               </div>
+
             </div>
           </div>
           {/* Tìm */}
