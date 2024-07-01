@@ -16,6 +16,7 @@ function App() {
   return (
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <Routes>
       <Route path="/HomePage" element={<Home />} />
       <Route path="/Setting/InfoAccount" element={<Setting />} />
@@ -29,11 +30,16 @@ function App() {
 =======
 =======
 >>>>>>> d93ff91 (file kiet done)
+=======
+>>>>>>> d93ff91 (file kiet done)
     <div>
       <Header />
       <XemDanhSachChuyenBay />
     </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> d93ff91 (file kiet done)
+=======
 >>>>>>> d93ff91 (file kiet done)
 =======
 >>>>>>> d93ff91 (file kiet done)
