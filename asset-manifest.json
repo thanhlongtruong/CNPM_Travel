@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/cnpm_travel/static/css/main.737ec703.css",
+    "main.js": "/cnpm_travel/static/js/main.5b829c83.js",
+    "static/js/453.3b4e378a.chunk.js": "/cnpm_travel/static/js/453.3b4e378a.chunk.js",
+    "index.html": "/cnpm_travel/index.html",
+    "main.737ec703.css.map": "/cnpm_travel/static/css/main.737ec703.css.map",
+    "main.5b829c83.js.map": "/cnpm_travel/static/js/main.5b829c83.js.map",
+    "453.3b4e378a.chunk.js.map": "/cnpm_travel/static/js/453.3b4e378a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.737ec703.css",
+    "static/js/main.5b829c83.js"
+  ]
+}
