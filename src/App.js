@@ -5,21 +5,17 @@ import Home from "./Components/Home.js";
 import { Setting } from "./Components/Setting.js";
 import XemDanhSachChuyenBay from "./Components/XemDanhSachChuyenBay.js";
 
-// function App() {
-//   return (
-//     <Routes>
-//       <Route path="/HomePage" element={<XemDanhSachChuyenBay />} />
-//       <Route path="/Setting/InfoAccount" element={<Setting />} />
-//       <Route path="/Setting/HistoryTicket" element={<Setting />} />
-//     </Routes>
-//   );
-// }
 function App() {
   return (
     <Routes>
       <Route path="/HomePage" element={<Home />} />
       <Route path="/Setting/InfoAccount" element={<Setting />} />
       <Route path="/Setting/HistoryTicket" element={<Setting />} />
+      <Route path="/XemDanhSachChuyenBay" element={<XemDanhSachChuyenBay />} />
+      <Route
+        path="//XemDanhSachChuyenbBay/DatChoCuaToi"
+        element={<DatChoCuaToi />}
+      />
     </Routes>
   );
 }

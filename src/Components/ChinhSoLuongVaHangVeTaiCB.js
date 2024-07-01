@@ -1,6 +1,7 @@
 import { useRef, useState, useContext, useEffect } from "react";
-import { CONTEXT } from "../Context/DoiTimKiemChuyenBay.js";
+import { CONTEXT } from "../Context/WindowLogin.js";
 import { formatCurrency } from "./XemDanhSachChuyenBay.js";
+import { Link } from "react-router-dom";
 
 export default function ChinhSoLuongVaHangVeTaiCB() {
   const { isChonMuaClick, handleChonMuaClick, clonedBlock } =
@@ -101,9 +102,12 @@ export default function ChinhSoLuongVaHangVeTaiCB() {
               {formatCurrency(6666760)}
             </span>
           </div>
-          <div className="fixed right-[2%] bg-[#FF5E1F] flex justify-center items-center font-bold text-white size-fit cursor-pointer p-[1%] rounded-lg">
+          <Link
+            to="/XemDanhSachChuyenbBay/DatChoCuaToi"
+            className="fixed right-[2%] bg-[#FF5E1F] flex justify-center items-center font-bold text-white size-fit cursor-pointer p-[1%] rounded-lg"
+          >
             Tiến hành đặt
-          </div>
+          </Link>
         </div>
       </div>
     </div>

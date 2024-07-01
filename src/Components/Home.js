@@ -1,17 +1,23 @@
-import { useRef, useState } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
+import Footer from "./Footer.js";
+import { useRef, useState, useContext } from "react";
+import Header from "./Header.js";
+import { Login } from "./Login.js";
+import { CONTEXT } from "../Context/WindowLogin.js";
+import { LoginSuccess } from "./StateLoginSucces.js";
+import { Link } from "react-router-dom";
 
 function Home() {
   //unlock khứ hồi
-  const [isState, setState] = useState("bg-gray-400 pointer-events-none");
+  //khứ hồi
+  const [isStateCheckbox, setStateCheckbox] = useState(
+    "bg-gray-400 pointer-events-none select-none"
+  );
   const handle = () => {
-    setState(
-      isState == "bg-gray-400 pointer-events-none"
+    setStateCheckbox(
+      isStateCheckbox === "bg-gray-400 pointer-events-none select-none"
         ? "bg-white"
-        : "bg-gray-400 pointer-events-none"
+        : "bg-gray-400 pointer-events-none select-none"
     );
-    console.log(isState);
   };
 
   //swap bay - dap
@@ -35,10 +41,14 @@ function Home() {
     );
   };
 
+  const { isState } = useContext(CONTEXT);
+
   return (
     <>
-      <div className="w-screen h-screen bg-cover bg-center p-0 bg-no-repeat bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')]">
+      {isState && <Login />}
+      <div className="relative h-screen w-screen bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')] bg-cover bg-center bg-no-repeat p-0">
         <Header />
+        <LoginSuccess />
         <div className="flex flex-col items-center justify-evenly lg:flex-row">
           {/* sân bay */}
           <div className="w-[80%] lg:w-[42%] flex flex-row relative">
@@ -173,14 +183,17 @@ function Home() {
                 </label>
               </div>
               <div
-                className={`flex flex-row justify-evenly items-center w-full rounded-r-2xl p-4 pl-8 text-[25px] border-y-4 border-r-4 border-[#cdd0d1] ${isState}`}
+                className={`flex flex-row justify-evenly items-center w-full rounded-r-2xl p-4 pl-8 text-[25px] border-y-4 border-r-4 border-[#cdd0d1] ${isStateCheckbox}`}
               >
-                <input type="date" className={`${isState}`} />
+                <input type="date" className={`${isStateCheckbox}`} />
               </div>
             </div>
           </div>
           {/* Tìm */}
-          <button className="bg-[#ff5e1f] p-5 m-[15px] lg:m-0 lg:self-end rounded-2xl border-4 border-[rgba(205,208,209,0.50)]">
+          <Link
+            to="/XemDanhSachChuyenBay"
+            className="bg-[#ff5e1f] p-5 m-[15px] lg:m-0 lg:self-end rounded-2xl border-4 border-[rgba(205,208,209,0.50)]"
+          >
             <svg
               width="24"
               height="24"
@@ -197,7 +210,7 @@ function Home() {
                 stroke-linejoin="round"
               ></path>
             </svg>
-          </button>
+          </Link>
         </div>
       </div>
       <Footer />
