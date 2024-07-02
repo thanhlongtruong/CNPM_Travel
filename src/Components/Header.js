@@ -45,13 +45,12 @@ function Header() {
   }, []);
 
   let currentLocation = window.location.href;
-  let place = currentLocation.includes("HomePage") ? true : false;
+  let place = currentLocation.includes("CNPM_Travel") ? true : false;
   return (
-
     <div
       className={`sticky top-0  z-20 flex w-full justify-between border-b-[0.5px] border-gray-600 ${isBg_Header} p-5 text-[20px]`}
     >
-      <Link to="/HomePage">
+      <Link to="/CNPM_Travel">
         <img
           alt=""
           src={
@@ -67,7 +66,6 @@ function Header() {
           <button
             className={`div-flex-adjust-justify-between gap-1 rounded-md border-2 ${isBorderChangeY} p-[6px]`}
             onClick={handState}
-
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

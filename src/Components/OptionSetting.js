@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export function OptionSetting() {
   const ref = useRef();
   const [isTextBg, setTextBg] = useState("bg-[#c79971] text-white");
-  let placeHome = window.location.href.includes("HomePage") ? true : false;
+  let placeHome = window.location.href.includes("CNPM_Travel") ? true : false;
   let place = window.location.href.includes("Setting/InfoAccount")
     ? true
     : false;
