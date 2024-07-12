@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
-import { OptionSetting } from "./OptionSetting";
+import Header from "../Header";
+import Footer from "../Footer";
+import { OptionSetting } from "../Home/OptionSetting";
 import { InfoAccount } from "./InfoAccount";
 import { HistoryTicket } from "./HistoryTicket";
 

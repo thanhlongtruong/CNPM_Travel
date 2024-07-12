@@ -46,9 +46,18 @@ export const OrderProvider = ({ children }) => {
     setChonMuaClick(!isChonMuaClick);
   };
 
+  const [isStateLogin, setStateLogin] = useState(false);
+  const handleEventLogin = () => {
+    setStateLogin(!isStateLogin);
+  };
+
+  const [isUser, setUser] = useState(null);
+
   return (
     <CONTEXT.Provider
       value={{
+        setUser,
+        isUser,
         isState,
         setState,
         handState,
@@ -68,6 +77,8 @@ export const OrderProvider = ({ children }) => {
         blockRef,
         clonedBlock,
         handleClonedBlock,
+        isStateLogin,
+        handleEventLogin,
       }}
     >
       {children}

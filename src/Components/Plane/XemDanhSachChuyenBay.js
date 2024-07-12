@@ -10,9 +10,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DoiTimKiemChuyenBay from "./DoiTimKiemChuyenBay.js";
 import ChinhSoLuongVaHangVeTaiCB from "./ChinhSoLuongVaHangVeTaiCB.js";
-import { CONTEXT } from "../Context/WindowLogin.js";
-import Header from "./Header.js";
-import Footer from "./Footer.js";
+import { CONTEXT } from "../../Context/WindowLogin.js";
+import Header from "../Header.js";
+import Footer from "../Footer.js";
 
 export default function XemDanhSachChuyenBay() {
   //Đổi tìm kiếm chuyến bay

@@ -1,8 +1,8 @@
-import Footer from "./Footer.js";
+import Footer from "../Footer.js";
 import { useRef, useState, useContext } from "react";
-import Header from "./Header.js";
-import { Login } from "./Login.js";
-import { CONTEXT } from "../Context/WindowLogin.js";
+import Header from "../Header.js";
+import { Login } from "./FormCheck.js";
+import { CONTEXT } from "../../Context/WindowLogin.js";
 import { LoginSuccess } from "./StateLoginSucces.js";
 import { Link } from "react-router-dom";
 
@@ -48,7 +48,7 @@ function Home() {
       {isState && <Login />}
       <div className="relative h-screen w-screen bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')] bg-cover bg-center bg-no-repeat p-0">
         <Header />
-        <LoginSuccess />
+        {/* <LoginSuccess /> */}
         <div className="flex flex-col items-center justify-evenly lg:flex-row">
           {/* sân bay */}
           <div className="w-[80%] lg:w-[42%] flex flex-row relative">
