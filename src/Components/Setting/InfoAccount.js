@@ -1,178 +1,131 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useContext } from "react";
+import { CONTEXT } from "../../Context/WindowLogin";
+import { FormRegister_or_InfoAccount } from "../Home/FormRegister_or_InfoAccount";
+import {
+  NotiFailEventlogin,
+  CONTENT_UPDATE_FAIL,
+  CONTENT_UPDATE_SUCCESS,
+} from "../Noti/NotiFailEventLogin";
 export function InfoAccount() {
-  const [isName, setName] = useState("Thanh Long");
-  const [isStateName, setStateName] = useState(true);
-  const [isPhone, setPhone] = useState("0967994184");
-  const [isStatePhone, setStatePhone] = useState(true);
-  const [isEmail, setEmail] = useState("");
-  const [isStateEmail, setStateEmail] = useState(true);
-  const [isPass, setPass] = useState("12345678");
-  const [isStatePass, setStatePass] = useState(true);
-  const [isSex, setSex] = useState("Nam");
-  const [isStateSex, setStateSex] = useState(true);
-  const [isBirth, setBirth] = useState("2004-04-15");
-  const [isStateBirth, setStateBirth] = useState(true);
-  const [isStateSave, setStateSave] = useState(false);
-  let date = new Date(isBirth);
+  const {
+    fullName,
+    numberPhone,
+    gender,
+    birthday,
+    password,
+    isStateSaveRegister,
+    setShowNotiSuccesUpdate,
+    isShowNotiSuccesUpdate,
+    setReset_When_Update,
+    get_Id_User,
+    setUser,
+    isUser,
+  } = useContext(CONTEXT);
 
-  useEffect(() => {
-    setStateName(isName.trimStart().length < 2 ? false : true);
-  }, [isName]);
+  const [isShowNotiFailUpdate, setShowNotiFailUpdate] = useState(false);
 
-  useEffect(() => {
-    setStateSex(
-      isSex.trim().length === 0 ||
-        (!isSex.trim().includes("Nam") && !isSex.trim().includes("Nữ"))
-        ? false
-        : true
-    );
-  }, [isSex]);
+  if (isUser === null) {
+    window.location.href = "/CNPM_Travel";
+  }
 
-  useEffect(() => {
-    setStateBirth(
-      date.getFullYear() >= new Date().getFullYear() ? false : true
-    );
-  }, [isBirth]);
+  const submitUpdateUser_id = async (event) => {
+    event.preventDefault();
+    const id = isUser._id;
+    const user = {
+      numberPhone: numberPhone,
+      fullName: fullName,
+      gender: gender,
+      birthday: birthday,
+      password: password,
+    };
 
-  useEffect(() => {
-    setStatePhone(
-      isPhone.trim().length !== 10 || !/^\d{10}$/.test(isPhone) ? false : true
-    );
-  }, [isPhone]);
+    try {
+      const response = await fetch(
+        `http://localhost:4001/api/update_user/${id}`,
+        {
+          method: "PATCH", // Phương thức HTTP
+          headers: {
+            "Content-Type": "application/json", // Kiểu nội dung của request
+          },
+          body: JSON.stringify({
+            numberPhone: user.numberPhone,
+            fullName: user.fullName,
+            gender: user.gender,
+            birthday: user.birthday,
+            password: user.password,
+          }),
+        }
+      );
+      if (!response.ok) {
+        setShowNotiFailUpdate(true);
+        throw new Error("Network response was not ok");
+      }
 
-  useEffect(() => {
-    if (!/\b\w+@gmail\.com\b/.test(isEmail) && isEmail.trim().length >= 1) {
-      setStateEmail(false);
-    } else if (isEmail.trim().length === 0) {
-      setStateEmail(true);
-    } else {
-      setStateEmail(true);
+      const fetchNewDataResponse = await fetch(
+        `http://localhost:4001/api/get_user/find_id_user/${get_Id_User}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!fetchNewDataResponse.ok) {
+        throw new Error("Failed to fetch new data");
+      }
+
+      const newData = await fetchNewDataResponse.json();
+      setUser(newData);
+
+      setReset_When_Update(true);
+    } catch (error) {
+      console.log(error);
     }
-  }, [isEmail]);
+  };
+  if (isShowNotiSuccesUpdate) {
+    setTimeout(() => {
+      setShowNotiSuccesUpdate(false);
+    }, 1000);
+  }
 
-  useEffect(() => {
-    setStatePass(isPass.trim().length < 8 ? false : true);
-  }, [isPass]);
-
-  useEffect(() => {
-    setStateSave(
-      isStateName && isStateSex && isStateBirth && isStatePhone && isStatePass
-        ? true
-        : false
-    );
-  }, [isStateName, isStateSex, isStateBirth, isStatePhone, isStatePass]);
+  if (isShowNotiFailUpdate) {
+    setTimeout(() => {
+      setShowNotiFailUpdate(false);
+    }, 1800);
+  }
   return (
     <>
       <p className="text-xl font-semibold p-5 text-center">
         Thông tin tài khoản
       </p>
 
-      <div className="border-t p-5">
-        <div className="mb-7">
-          <p className="font-semibold text-base text-slate-500">Tên đầy đủ</p>
-          {!isStateName && (
-            <span className="text-rose-600 ml-4">* Tên phải trên 10 kí tự</span>
-          )}
-          <input
-            onChange={(e) => setName(e.target.value)}
-            value={isName}
-            className="outline-none px-3 w-full h-9 border border-slate-500 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-          />
-        </div>
-        <div className="flex gap-7 mb-7">
-          <div className="w-[25%]">
-            <p className="font-semibold text-base text-slate-500">Giới tính</p>
-            {!isStateSex && (
-              <span className="text-rose-600 ml-4">* "Nam" or "Nữ"</span>
-            )}
-            <input
-              onChange={(e) => setSex(e.target.value)}
-              value={isSex}
-              className="outline-none px-3 w-full h-9 border border-slate-500 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-            />
-          </div>
-          <div className="w-[37%]">
-            <p className="outline-none font-semibold text-base text-slate-500">
-              Ngày sinh
-            </p>
-            {!isStateBirth && (
-              <span className="text-rose-600 ml-4">
-                * Năm sinh không phù hợp
-              </span>
-            )}
-            <input
-              type="date"
-              onChange={(e) => setBirth(e.target.value)}
-              value={isBirth}
-              className="outline-none px-3 w-full h-9 border border-slate-500 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-            />
-          </div>
-        </div>
-        <div className="mb-7">
-          <p className="font-semibold text-base text-slate-500">
-            Số điện thoại
-          </p>
-          {!isStatePhone && (
-            <span className="text-rose-600 ml-4">
-              * Số điện thoại phải 10 số
-            </span>
-          )}
-          <input
-            type="tel"
-            onChange={(e) => setPhone(e.target.value)}
-            value={isPhone}
-            className="outline-none px-3 w-full h-9 border border-slate-500 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-          />
-        </div>
-        <div className="mb-7">
-          <p className="font-semibold text-base text-slate-500">Email</p>
-          {!isStateEmail && (
-            <span className="text-rose-600 ml-4">* Email không hợp lệ</span>
-          )}
-          <input
-            type="email"
-            onChange={(e) => setEmail(e.target.value)}
-            value={isEmail}
-            className="outline-none px-3 w-full h-9 border border-slate-500 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-          />
-        </div>
-        <div className="mb-7">
-          <p className="font-semibold text-base text-slate-500">Mật khẩu</p>
-          {!isStatePass && (
-            <span className="text-rose-600 ml-4">
-              * Pass từ 8 kí tự trở lên
-            </span>
-          )}
-          <input
-            type="password"
-            onChange={(e) => setPass(e.target.value)}
-            value={isPass}
-            className="outline-none px-3 w-full h-9 border border-slate-500 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-          />
-        </div>
-      </div>
-      <div className="flex gap-6 w-full h-10 justify-end px-5">
-        {isStateSave ? (
-          <>
-            <div className="bg-sky-50 h-fit w-fit p-3 font-semibold text-sky-500 text-base rounded-lg">
-              Hủy
-            </div>
-            <div className="bg-sky-500 h-fit w-fit p-3 font-semibold text-white text-base rounded-lg">
-              Lưu
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="bg-slate-300 select-none h-fit w-fit p-3 font-semibold text-white text-base rounded-lg">
-              Hủy
-            </div>
-            <div className="bg-slate-300 select-none h-fit w-fit p-3 font-semibold text-white text-base rounded-lg">
-              Lưu
-            </div>
-          </>
+      <form onSubmit={submitUpdateUser_id} className="relative m-auto">
+        {isShowNotiFailUpdate && (
+          <NotiFailEventlogin content={CONTENT_UPDATE_FAIL} />
         )}
-      </div>
+        {isShowNotiSuccesUpdate && (
+          <NotiFailEventlogin content={CONTENT_UPDATE_SUCCESS} />
+        )}
+        <FormRegister_or_InfoAccount />
+        <div className="flex gap-6 w-full h-10 justify-end px-5">
+          {!isStateSaveRegister ? (
+            <button
+              className="bg-slate-300 select-none h-fit w-fit p-3 font-semibold text-white text-base rounded-lg"
+              type="button"
+            >
+              Lưu
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="bg-sky-500 select-none h-fit w-fit p-3 font-semibold text-white text-base rounded-lg"
+            >
+              Lưu
+            </button>
+          )}
+        </div>
+      </form>
     </>
   );
 }

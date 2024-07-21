@@ -1,0 +1,88 @@
+.vietqr {
+  display: flex;
+  flex-direction: column;
+}
+.buttonqr {
+  border-radius: 50%;
+  width: 23px;
+  height: 23px;
+  border: 1px solid gray;
+}
+.buttonqr.active {
+  background-color: rgb(21, 133, 219);
+  border: 1px solid rgb(21, 133, 219);
+}
+.vietqr-head {
+  display: flex;
+  padding: 16px;
+  gap: 15px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.vietqr-foot {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.noteqr.active {
+  border: 1px solid rgb(17, 128, 233);
+  height: 100px;
+  transform: translateY(0px);
+  border-radius: 8px;
+  background-color: rgb(229, 236, 243);
+}
+.note1.active {
+  padding: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: justify;
+}
+li {
+  margin-top: 2px;
+}
+.mobilebanking {
+  display: flex;
+  flex-direction: column;
+}
+.buttonbanking {
+  border-radius: 50%;
+  width: 23px;
+  height: 23px;
+  border: 1px solid gray;
+}
+.mobilebanking-head {
+  display: flex;
+}
+.buttonbanking.active {
+  background-color: rgb(21, 133, 219);
+  border: 1px solid rgb(21, 133, 219);
+}
+.mobilebanking-head {
+  display: flex;
+  padding: 16px;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+.img-banking {
+  margin-left: auto;
+}
+.mobilebanking-foot {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.notebanking.active {
+  border: 1px solid rgb(17, 128, 233);
+  transform: translateY(0px);
+  border-radius: 8px;
+  background-color: rgb(229, 236, 243);
+}
+.notesbanking.active {
+  padding: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: justify;
+}
+.imgqr {
+  height: 18px;
+  width: 50px;
+  margin-left: auto;
+}

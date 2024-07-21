@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { CONTEXT } from "../Context/WindowLogin";
 import { Link } from "react-router-dom";
-import { Login } from "./Home/FormCheck";
 
 function Header() {
-  const { isStateLogin, handState, isUser } = useContext(CONTEXT);
+  const {
+    isStateLogin,
+    handleShowInterfaceLogin,
+    isUser,
+    handleShowOptionSetting_LoginSuccess,
+  } = useContext(CONTEXT);
 
-  if (isUser !== null) {
-    console.log(isUser.fullName);
-  }
   const [isLogo, setLogo] = useState(
     "https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/f/fbab4f587da2242fbe9858fe3e5ba717.svg"
   );
@@ -28,9 +29,9 @@ function Header() {
         setLogo_Header(
           "https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/f/fbab4f587da2242fbe9858fe3e5ba717.svg"
         );
-        setBorderChangeY("border-white");
-        setColor("none");
-        setStateStroke("currentColor");
+        setBorderChangeY("border-black text-[#0194f3]");
+        setColor("#3f3f46");
+        setStateStroke("none");
       } else {
         setBg_Header("bg-white text-black transition-colors duration-500");
         setLogo_Header(
@@ -39,7 +40,7 @@ function Header() {
         setBorderChangeY("border-[#0194f3]");
         setColor("#0194f3");
         setStateStroke(true);
-        setStateStroke("none");
+        setStateStroke("#0194f3");
       }
     };
     window.addEventListener("scroll", handleScroll);
@@ -65,49 +66,47 @@ function Header() {
         />
       </Link>
 
-      {place && (
-        <div className="div-flex-adjust-justify-between w-fit gap-x-10">
-          {!isStateLogin && (
-            <>
-              <button
-                className={`div-flex-adjust-justify-between gap-1 rounded-md border-2 ${isBorderChangeY} p-[6px]`}
-                onClick={handState}
+      <div className="div-flex-adjust-justify-between w-fit gap-x-10">
+        {!isStateLogin && (
+          <>
+            <button
+              className={`div-flex-adjust-justify-between  gap-1 rounded-md border-2 ${isBorderChangeY} p-[6px]`}
+              onClick={handleShowInterfaceLogin}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill={isColor}
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke={isStateStroke}
+                className="size-5"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill={isColor}
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke={isStateStroke}
-                  class="size-5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-                  />
-                </svg>
-                Đăng nhập
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                />
+              </svg>
+              Đăng nhập
+            </button>
 
-              <button
-                className="rounded-md bg-[#0194f3] p-2 text-white"
-                onClick={handState}
-              >
-                Đăng ký
-              </button>
-            </>
-          )}
-          {isStateLogin && isUser !== null && (
             <button
               className="rounded-md bg-[#0194f3] p-2 text-white"
-              onClick={handState}
+              onClick={handleShowInterfaceLogin}
             >
-              {isUser.fullName}
+              Đăng ký
             </button>
-          )}
-        </div>
-      )}
+          </>
+        )}
+        {isStateLogin && (
+          <button
+            className="rounded-md bg-[#0194f3] p-2 text-white"
+            onClick={handleShowOptionSetting_LoginSuccess}
+          >
+            {isUser.fullName ? isUser.fullName : "NULL"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

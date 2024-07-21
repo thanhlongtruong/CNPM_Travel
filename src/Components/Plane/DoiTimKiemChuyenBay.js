@@ -73,7 +73,6 @@ export default function DoiTimKiemChuyenBay() {
     const dateValue = event.target.value; // This is in the format 'yyyy-mm-dd'
     const [year, month, day] = dateValue.split("-");
     const formattedDate = new Date(year, month - 1, day);
-    console.log(day + month + year);
     setToday(formattedDate);
     setSwitchNgayBay(
       format(formattedDate, "EEEE, d 'thg' M yyyy", { locale: vi })
@@ -115,18 +114,18 @@ export default function DoiTimKiemChuyenBay() {
                   <path
                     d="M3 21H21"
                     stroke="#0194f3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    // fill-rule="evenodd"
+                    // clip-rule="evenodd"
                     d="M12 9L15.1924 7.93585C17.317 7.22767 19.6563 7.95843 21 9.75L7.44513 14.0629C5.86627 14.5653 4.1791 13.6926 3.67674 12.1137C3.66772 12.0854 3.65912 12.0569 3.65094 12.0283L3 9.75L5.25 10.875L9 9.75L4.5 3H5.25L12 9Z"
                     stroke="#0194f3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                 </svg>
               </label>
@@ -163,18 +162,18 @@ export default function DoiTimKiemChuyenBay() {
                   <path
                     d="M3 21H21"
                     stroke="#0194f3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    // fill-rule="evenodd"
+                    // clip-rule="evenodd"
                     d="M12 9L15.1924 7.93585C17.317 7.22767 19.6563 7.95843 21 9.75L7.44513 14.0629C5.86627 14.5653 4.1791 13.6926 3.67674 12.1137C3.66772 12.0854 3.65912 12.0569 3.65094 12.0283L3 9.75L5.25 10.875L9 9.75L4.5 3H5.25L12 9Z"
                     stroke="#0194f3"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   ></path>
                 </svg>
               </label>
@@ -207,10 +206,10 @@ export default function DoiTimKiemChuyenBay() {
           </button>
         </div>
         {/* ngày */}
-        <div className="w-[90%] flex flex-row my-[2%]">
+        <div className="w-[90%] flex justify-center flex-row my-[2%]">
           <div className="w-[50%]">
             <span className="text-black text-[20px] line-clamp-1">Ngày đi</span>
-            <div className="flex flex-row justify-evenly items-center w-full rounded-l-2xl p-4 text-[25px] border-y-4 border-l-4 border-r-2 border-[#cdd0d1] bg-white">
+            <div className="flex flex-row justify-evenly items-center w-full rounded-2xl p-4 text-[25px] border-4 border-[#cdd0d1] bg-white">
               <input
                 ref={selectNgayBay}
                 onChange={handleInputDateConvert}
@@ -218,7 +217,7 @@ export default function DoiTimKiemChuyenBay() {
               />
             </div>
           </div>
-          <div className="w-[50%]">
+          {/* <div className="w-[50%]">
             <div className="flex-row w-fit line-clamp-1">
               <input
                 id="khu_hoi_check"
@@ -236,7 +235,7 @@ export default function DoiTimKiemChuyenBay() {
             >
               <input type="date" className={`${isState}`} />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

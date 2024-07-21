@@ -1,10 +1,14 @@
 import Footer from "../Footer.js";
-import { useRef, useState, useContext } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import Header from "../Header.js";
 import { Login } from "./FormCheck.js";
 import { CONTEXT } from "../../Context/WindowLogin.js";
-import { LoginSuccess } from "./StateLoginSucces.js";
+import { LoginSuccess } from "../Setting/StateLoginSucces.js";
 import { Link } from "react-router-dom";
+import {
+  NotiFailEventlogin,
+  CONTENT_LOGIN_SUCCESS,
+} from "../Noti/NotiFailEventLogin.js";
 
 function Home() {
   //unlock khứ hồi
@@ -41,14 +45,30 @@ function Home() {
     );
   };
 
-  const { isState } = useContext(CONTEXT);
+  const {
+    isShowInterfaceLogin,
+    isShowOptionSetting_LoginSuccess,
+    isShowNotiFailLogin,
+    isStateLogin,
+    isShowNotiSuccesLogin,
+    setShowOptionSetting_LoginSuccess,
+  } = useContext(CONTEXT);
 
+  useEffect(() => {
+    if (isShowOptionSetting_LoginSuccess) {
+      setShowOptionSetting_LoginSuccess(false);
+    }
+  }, []);
   return (
     <>
-      {isState && <Login />}
+      {isShowInterfaceLogin && <Login />}
+
       <div className="relative h-screen w-screen bg-[url('https://ik.imagekit.io/tvlk/image/imageResource/2023/09/27/1695776209619-17a750c3f514f7a8cccde2d0976c902a.png?tr=q-75')] bg-cover bg-center bg-no-repeat p-0">
+        {isShowNotiSuccesLogin && (
+          <NotiFailEventlogin content={CONTENT_LOGIN_SUCCESS} />
+        )}
         <Header />
-        {/* <LoginSuccess /> */}
+        {isShowOptionSetting_LoginSuccess && <LoginSuccess />}
         <div className="flex flex-col items-center justify-evenly lg:flex-row">
           {/* sân bay */}
           <div className="w-[80%] lg:w-[42%] flex flex-row relative">
@@ -67,18 +87,18 @@ function Home() {
                     <path
                       d="M3 21H21"
                       stroke="#0194f3"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     ></path>
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
+                      // fill-rule="evenodd"
+                      // clip-rule="evenodd"
                       d="M12 9L15.1924 7.93585C17.317 7.22767 19.6563 7.95843 21 9.75L7.44513 14.0629C5.86627 14.5653 4.1791 13.6926 3.67674 12.1137C3.66772 12.0854 3.65912 12.0569 3.65094 12.0283L3 9.75L5.25 10.875L9 9.75L4.5 3H5.25L12 9Z"
                       stroke="#0194f3"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     ></path>
                   </svg>
                 </label>
@@ -115,18 +135,18 @@ function Home() {
                     <path
                       d="M3 21H21"
                       stroke="#0194f3"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     ></path>
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
+                      // fill-rule="evenodd"
+                      // clip-rule="evenodd"
                       d="M12 9L15.1924 7.93585C17.317 7.22767 19.6563 7.95843 21 9.75L7.44513 14.0629C5.86627 14.5653 4.1791 13.6926 3.67674 12.1137C3.66772 12.0854 3.65912 12.0569 3.65094 12.0283L3 9.75L5.25 10.875L9 9.75L4.5 3H5.25L12 9Z"
                       stroke="#0194f3"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     ></path>
                   </svg>
                 </label>
@@ -205,9 +225,9 @@ function Home() {
               <path
                 d="M15 15L20.5 20.5M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
                 stroke="#FFFFFF"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               ></path>
             </svg>
           </Link>
