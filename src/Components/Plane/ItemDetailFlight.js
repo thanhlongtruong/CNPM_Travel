@@ -28,7 +28,10 @@ const ItemDetailFlight = (props) => {
             Số kí tối thiểu {props.khoiLuongQuyDinhTrenMotVe}
           </span>
           <span className="flex flex-row text-base font-bold text-[#109AF4]">
-            Số vé còn lại: {props.soLuongGhe}
+            Số vé thường còn lại: {props.soGheThuong}
+          </span>
+          <span className="flex flex-row text-base font-bold text-[#109AF4]">
+            Số vé thương gia còn lại: {props.soGheThuongGia}
           </span>
           <span>{props.diemDen_}</span>
         </div>

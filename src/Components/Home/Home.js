@@ -1,10 +1,13 @@
 import Footer from "../Footer.js";
 import { useRef, useState, useContext, useEffect } from "react";
+import { useLocation, useNavigate, useNavigation } from "react-router-dom";
 import Header from "../Header.js";
 import { Login } from "./FormCheck.js";
 import { CONTEXT } from "../../Context/WindowLogin.js";
 import { LoginSuccess } from "../Setting/StateLoginSucces.js";
 import { Link } from "react-router-dom";
+import { format, addDays, parse } from "date-fns";
+import { vi } from "date-fns/locale";
 import {
   NotiFailEventlogin,
   CONTENT_LOGIN_SUCCESS,
@@ -26,9 +29,7 @@ function Home() {
 
   //swap bay - dap
   const selectRefBay = useRef(null);
-  const [isBay, setBay] = useState("");
   const selectRefDap = useRef(null);
-  const [isDap, setDap] = useState("");
   const handleSwap = () => {
     const temp =
       selectRefBay.current.options[selectRefBay.current.selectedIndex].text;
@@ -36,13 +37,6 @@ function Home() {
       selectRefDap.current.options[selectRefDap.current.selectedIndex].text;
     selectRefDap.current.options[selectRefDap.current.selectedIndex].text =
       temp;
-
-    setBay(
-      selectRefBay.current.options[selectRefBay.current.selectedIndex].text
-    );
-    setDap(
-      selectRefDap.current.options[selectRefDap.current.selectedIndex].text
-    );
   };
 
   const {
@@ -52,6 +46,18 @@ function Home() {
     isStateLogin,
     isShowNotiSuccesLogin,
     setShowOptionSetting_LoginSuccess,
+    diemDenArray,
+    setDiemDenArray,
+    diemDiArray,
+    setDiemDiArray,
+    select1Value,
+    setSelect1Value,
+    select2Value,
+    setSelect2Value,
+    ngayDi,
+    setNgayDi,
+    setSwitchNgayBay,
+    searchForChuyenBay,
   } = useContext(CONTEXT);
 
   useEffect(() => {
@@ -59,6 +65,40 @@ function Home() {
       setShowOptionSetting_LoginSuccess(false);
     }
   }, []);
+
+  // //! new
+  useEffect(() => {
+    const fetchDiDenFlight = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:4002/api/get/all_flights`
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setDiemDiArray([...new Set(data.map((f) => f.diemDi))]);
+        setDiemDenArray([...new Set(data.map((f) => f.diemDen))]);
+        setSelect1Value(data[0].diemDi);
+        setSelect2Value(data[0].diemDen);
+      } catch (error) {
+        console.error("There was a problem with your fetch operation:", error);
+      }
+    };
+    fetchDiDenFlight();
+  }, []);
+
+  // const navi = useNavigate();
+  // const searchForChuyenBay = async () => {
+  //   navi("/XemDanhSachChuyenBay", {
+  //     state: {
+  //       dtSelect1Value: select1Value,
+  //       dtSelect2Value: select2Value,
+  //       dtNgayDi: ngayDi,
+  //     },
+  //   });
+  // };
+
   return (
     <>
       {isShowInterfaceLogin && <Login />}
@@ -104,19 +144,19 @@ function Home() {
                 </label>
                 <select
                   ref={selectRefBay}
-                  onChange={() =>
-                    setBay(
-                      selectRefBay.current.options[
-                        selectRefBay.current.selectedIndex
-                      ].text
-                    )
-                  }
                   id="bay-select"
                   className="appearance-none text-left max-w-[70%]"
+                  onChange={(e) => {
+                    setSelect1Value(e.target.value);
+                    setDiemDiArray([...new Set(diemDiArray)]);
+                  }}
+                  value={select1Value}
                 >
-                  <option>Sân bay Tân Sơn Nhất</option>
-                  <option>Sân bay Đà Nẵng</option>
-                  <option>Sân bay Nội Bài</option>
+                  {diemDiArray
+                    .filter((d) => d !== select2Value)
+                    .map((d, index) => (
+                      <option>{d}</option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -152,19 +192,18 @@ function Home() {
                 </label>
                 <select
                   ref={selectRefDap}
-                  onChange={() =>
-                    setBay(
-                      selectRefDap.current.options[
-                        selectRefDap.current.selectedIndex
-                      ].text
-                    )
-                  }
                   id="dap-select"
                   className="appearance-none text-left max-w-[70%]"
+                  onChange={(e) => {
+                    setSelect2Value(e.target.value);
+                  }}
+                  value={select2Value}
                 >
-                  <option>Sân bay Tokyo</option>
-                  <option>Sân bay Los Angeles</option>
-                  <option>Sân bay Thượng Hải</option>
+                  {diemDenArray
+                    .filter((d) => d !== select1Value)
+                    .map((d, index) => (
+                      <option>{d}</option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -183,7 +222,13 @@ function Home() {
             <div className="w-[50%]">
               <span className="text-white text-[20px]">Ngày đi</span>
               <div className="flex flex-row justify-evenly items-center w-full rounded-l-2xl p-4 text-[25px] border-y-4 border-l-4 border-r-2 border-[#cdd0d1] bg-white">
-                <input type="date" />
+                <input
+                  value={ngayDi}
+                  type="date"
+                  onChange={(e) => {
+                    setNgayDi(e.target.value);
+                  }}
+                />
               </div>
             </div>
             <div className="w-[50%]">
@@ -210,9 +255,14 @@ function Home() {
             </div>
           </div>
           {/* Tìm */}
-          <Link
-            to="/XemDanhSachChuyenBay"
-            className="bg-[#ff5e1f] p-5 m-[15px] lg:m-0 lg:self-end rounded-2xl border-4 border-[rgba(205,208,209,0.50)]"
+          <div
+            onClick={() => {
+              searchForChuyenBay();
+              setSwitchNgayBay(
+                format(new Date(ngayDi), "EEEE, d 'thg' M yyyy", { locale: vi })
+              );
+            }}
+            className="bg-[#ff5e1f] p-5 m-[15px] lg:m-0 lg:self-end rounded-2xl border-4 border-[rgba(205,208,209,0.50)] cursor-pointer"
           >
             <svg
               width="24"
@@ -230,7 +280,7 @@ function Home() {
                 strokeLinejoin="round"
               ></path>
             </svg>
-          </Link>
+          </div>
         </div>
       </div>
       <Footer />

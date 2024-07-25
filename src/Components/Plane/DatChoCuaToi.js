@@ -1,10 +1,123 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../Header";
 import { Link, useLocation } from "react-router-dom";
 
 function DatChoCuaToi() {
   const dataTicketLocation = useLocation();
   const { dataTicket, dataFlight, dataUser } = dataTicketLocation.state;
+  if (dataUser === null) {
+    window.location.href = "/XemDanhSachChuyenBay";
+  }
+
+  //!handle device
+  const [sizeSizeWidth, setSizeWidth] = useState();
+  useEffect(() => {
+    const handlSize = () => {
+      setSizeWidth(document.documentElement.clientWidth);
+    };
+    window.addEventListener("resize", handlSize);
+    return () => {
+      window.removeEventListener("resize", handlSize);
+    };
+  }, [sizeSizeWidth]);
+
+  useEffect(() => {
+    if (sizeSizeWidth >= 1024) {
+    } else {
+    }
+  }, [sizeSizeWidth]);
+
+  const [isGetName, setGetName] = useState([]);
+  const [isGetPhone, setGetPhone] = useState([]);
+  const [isGetSoKy, setGetSoky] = useState([]);
+  const [isGetHangVe, setGetHangVe] = useState([]);
+  const [isGiaVe, setGiaVe] = useState([]);
+
+  const handlGetInputName = (name, index) => {
+    setGetName((prev) => {
+      const updated = [...prev];
+      updated[index] = name;
+      return updated;
+    });
+  };
+
+  const handlGetInputPhone = (phone, index) => {
+    setGetPhone((prev) => {
+      const updated = [...prev];
+      updated[index] = phone;
+      return updated;
+    });
+  };
+  const handlGetSoKy = (soKy, index) => {
+    setGetSoky((prev) => {
+      const updated = [...prev];
+      updated[index] = soKy;
+      return updated;
+    });
+  };
+
+  const handlGetHangVe = (hangVe, index) => {
+    setGetHangVe((prev) => {
+      const updated = [...prev];
+      updated[index] = hangVe;
+      return updated;
+    });
+  };
+
+  const handlGetGia = (type, index) => {
+    if (type === "Vé thường") {
+      setGiaVe((prev) => {
+        const gia = [...prev];
+        gia[index] = dataFlight.giaVeGoc;
+        return gia;
+      });
+    }
+    if (type === "Vé thương gia") {
+      setGiaVe((prev) => {
+        const gia = [...prev];
+        gia[index] = Number((dataFlight.giaVeGoc * 1.3).toFixed(3));
+        return gia;
+      });
+    }
+  };
+  //!
+  const handleResTicket = async () => {
+    const promises = [];
+    for (let i = 0; i < dataTicket.soLuongVe; i++) {
+      promises.push(
+        fetch("http://localhost:4003/api/add_ticket", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Ten: isGetName[i],
+            phoneNumber: isGetPhone[i],
+            soKyHanhLy: isGetSoKy[i],
+            chuyenBayId: dataFlight._id,
+            trangThaiVe: dataTicket.trangThaiVe,
+          }),
+        })
+      );
+    }
+    try {
+      const res = await Promise.all(promises);
+      for (const response of res) {
+        if (!response.ok) {
+          const data = await response.json();
+          if (data.error) {
+            throw new Error(data.error);
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        }
+      }
+      const data = await Promise.all(res.map((res) => res.json()));
+      console.log(data);
+    } catch (error) {
+      console.error("Bug when create ticket", error);
+    }
+  };
 
   return (
     <>
@@ -157,6 +270,43 @@ function DatChoCuaToi() {
               </div>
             </div>
           </div>
+          <div className=" flex-col p-4 shadow-sm bg-yellow-100">
+            <div className="mt-[-5px]">
+              <h3 className="text-xs font-medium text-red-500">
+                Vui lòng chú ý cho những điều sau đây :
+              </h3>
+            </div>
+            <h3 className="text-base font-medium">
+              Tránh nhầm lẫn khi nhập tên, vì bạn có thể không sửa được sau khi
+              đặt chỗ. Nhấn vào bên dưới để xem hướng dẫn.
+            </h3>
+            <h3 className="text-blue-500 font-bold text-base cursor-pointer ">
+              Xem hướng dẫn nhập tên
+            </h3>
+          </div>
+          <h3 className="text-xl font-bold mt-[40px]">Thông tin hành khách</h3>
+
+          {Array.from({ length: dataTicket.soLuongVe }, (_, index) => (
+            <div key={index}>
+              <ThongTinHanhKhach
+                index={index}
+                dataFlight={dataFlight}
+                handlGetInputName={handlGetInputName}
+                handlGetInputPhone={handlGetInputPhone}
+                handlGetSoKy={handlGetSoKy}
+                handlGetHangVe={handlGetHangVe}
+                handlGetGia={handlGetGia}
+              />
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={handleResTicket}
+            className="p-3 bg-[#0194F3] text-white mt-3 float-right font-semibold rounded-lg"
+          >
+            Xác nhận
+          </button>
         </div>
       </div>
     </>
@@ -277,6 +427,283 @@ function InfoTicket({ dataFlight, dataTicket }) {
             {dataTicket.trangThaiVe}
           </h4>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ThongTinHanhKhach({
+  index,
+  dataFlight,
+  handlGetInputName,
+  handlGetInputPhone,
+  handlGetSoKy,
+  handlGetHangVe,
+  handlGetGia,
+}) {
+  const [fullName, setFullName] = useState("");
+  const [numberPhone, setNumberPhone] = useState("");
+  const [checkFullName, checkSetFullName] = useState(true);
+  const [checkNumberPhone, checkSetNumberPhone] = useState(true);
+  useEffect(() => {
+    checkSetFullName(fullName.trimStart().length < 2 ? false : true);
+    handlGetInputName(fullName, index);
+  }, [fullName]);
+
+  useEffect(() => {
+    checkSetNumberPhone(
+      numberPhone.trim().length !== 10 || !/^\d{10}$/.test(numberPhone)
+        ? false
+        : true
+    );
+    handlGetInputPhone(numberPhone, index);
+  }, [numberPhone]);
+
+  const handlSetName = (e) => {
+    setFullName(e.target.value);
+  };
+  const handlSetPhone = (e) => {
+    setNumberPhone(e.target.value);
+  };
+
+  return (
+    <div className="text-xl font-bold mb-3">
+      <div className="mt-[16px]  bg-white shadow-lg rounded-md">
+        <div className="pl-[16px] pr[16px] flex h-[52px] p-4 shadow-sm">
+          <h3 className="text-base w-[570px]">Thông tin vé {index + 1}</h3>
+          <h3 className=" cursor-pointer text-base text-blue-500">Lưu</h3>
+        </div>
+        <div className="w-full m-0 flex p-4 flex-col md:flex-row">
+          <div className="w-[50%] mb-[16px] pr-[12px]">
+            <div className="flex flex-col">
+              <div className="flex">
+                <h3 className=" font-medium text-sm text-gray-500">
+                  Họ Tên (vd: Nguyen Anh)
+                </h3>{" "}
+                <span className="text-red-500 text-sm">*</span>
+              </div>
+              <div className="mt-2">
+                <input
+                  defaultValue={fullName}
+                  className="border border-gray-300 h-[40px] w-full rounded-md px-2 "
+                  type="text"
+                  onChange={handlSetName}
+                />
+                <span className="text-red-600 font-medium text-sm ">
+                  {checkFullName
+                    ? ""
+                    : "Họ Tên (vd: Nguyen Anh) là phần bắt buộc"}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="w-[50%] mb-[16px] md:pl-[12px]">
+            <div className="flex flex-col">
+              <div className="flex">
+                <h3 className=" font-medium text-sm text-gray-500">
+                  Số điện thoại (vd: 0987654321)
+                </h3>{" "}
+                <span className="text-red-500 text-sm">*</span>
+              </div>
+              <div className="mt-2">
+                <input
+                  defaultValue={numberPhone}
+                  className="border border-gray-300 h-[40px] w-full rounded-md px-2"
+                  type="text"
+                  onChange={handlSetPhone}
+                />
+                <span className="text-red-600 font-medium text-sm ">
+                  {checkNumberPhone
+                    ? ""
+                    : "Số điện thoại (vd: 0987654321) là phần bắt buộc"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-between w-full">
+          <FCChooseHangVe
+            dataFlight={dataFlight}
+            index={index}
+            handlGetHangVe={handlGetHangVe}
+            handlGetGia={handlGetGia}
+          />
+          <FCInputSoKy
+            dataFlight={dataFlight}
+            index={index}
+            handlGetSoKy={handlGetSoKy}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FCChooseHangVe({ dataFlight, index, handlGetHangVe, handlGetGia }) {
+  const [isClicked, setIsClicked] = useState();
+  const handleButtonClick = (type) => {
+    if (type === "Vé thường") {
+      handlGetHangVe(type, index);
+      handlGetGia(type, index);
+      setIsClicked(true);
+    }
+    if (type === "Vé thương gia") {
+      handlGetHangVe(type, index);
+      handlGetGia(type, index);
+      setIsClicked(false);
+    }
+  };
+  return (
+    <div className="shadow-md flex flex-col p-5 w-fit text-xl rounded-2xl m-[2%] font-bold bg-white items-start">
+      <div className="flex gap-2 items-center">
+        <span className="text-lg select-none pointer-events-none">
+          Chọn hạng vé
+        </span>
+        <div className="relative">
+          <div className="cursor-pointer icon-hover-trigger">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="#0194F3"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+              />
+            </svg>
+          </div>
+          <div className="absolute left-1/2 transform text-wrap -translate-x-1/2 bottom-full mb-2 w-[300px] p-2 text-sm text-white bg-gray-700 rounded transition-opacity duration-300 opacity-0 hover-note">
+            Có 2 loại vé: <br /> - Vé thường <br /> - Vé thương gia = Vé thường
+            * 13%
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-[-8px] w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-gray-700"></div>
+          </div>
+        </div>
+
+        <style jsx>{`
+          .icon-hover-trigger:hover + .hover-note {
+            opacity: 1;
+          }
+        `}</style>
+      </div>
+      <div className="flex flex-col gap-3 w-fit mt-[2%] justify-evenly">
+        {/*//! Ticket Normal */}
+
+        <button
+          className={`border-2 rounded-lg h-fit flex gap-x-3 w-fit p-2 hover:border-[#0194F3] ${isClicked === true ? "border-[#0194F3]" : ""}`}
+          onClick={() => handleButtonClick("Vé thường")}
+        >
+          <img
+            className="bg-cover w-16 h-14"
+            src="https://ik.imagekit.io/tvlk/image/imageResource/2022/12/20/1671519148670-d3ca3132946e435bd467ccc096730670.png"
+          />
+          <div className="flex flex-col">
+            <span className="text-base font-bold">Vé thường</span>
+            <span className="text-lg font-semibold text-[#FF5E1F]">
+              {dataFlight.giaVeGoc}
+              <span className="text-sm font-semibold text-[#a0a0a0]">
+                / khách
+              </span>
+            </span>
+          </div>
+        </button>
+
+        {/*//! Ticket Rich */}
+        <button
+          type="button"
+          className={`border-2 rounded-lg h-fit flex gap-x-3 w-fit p-2 hover:border-[#0194F3] ${isClicked === false ? "border-[#0194F3]" : ""}`}
+          onClick={() => handleButtonClick("Vé thương gia")}
+        >
+          <img
+            className="bg-cover w-16 h-14"
+            src="https://ik.imagekit.io/tvlk/image/imageResource/2022/12/23/1671789427394-4441a4e3f0b96ea01dccf4a620bad996.png"
+          />
+          <div className="flex flex-col">
+            <span className="text-base font-bold whitespace-nowrap">
+              Vé thương gia
+            </span>
+            <span className="text-lg font-semibold text-[#FF5E1F]">
+              {(dataFlight.giaVeGoc * 1.3).toFixed(3)}
+              <span className="text-sm font-semibold text-[#a0a0a0]">
+                /khách
+              </span>
+            </span>
+          </div>
+        </button>
+      </div>
+    </div>
+  );
+}
+function FCInputSoKy({ index, handlGetSoKy, dataFlight }) {
+  const [soKy, setSoKy] = useState();
+  const [checkSoKy, checkSetSoKy] = useState(false);
+
+  useEffect(() => {
+    checkSetSoKy(
+      Number(soKy) > dataFlight.khoiLuongQuyDinhTrenMotVe ? false : true
+    );
+    handlGetSoKy(soKy, index);
+  }, [soKy]);
+
+  const handleSetSoKy = (e) => {
+    setSoKy(e.target.value);
+  };
+  return (
+    <div className="shadow-md mb-3 flex flex-col h-fit w-fit p-5 rounded-2xl mx-[2%] font-bold bg-white items-start">
+      <div className="flex gap-2 items-center ">
+        <span className="select-none pointer-events-none text-lg">
+          Nhập số ký hành lý của bạn
+        </span>
+
+        <div className="relative">
+          <div className="cursor-pointer icon-hover-trigger">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="#0194F3"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+              />
+            </svg>
+          </div>
+          <div className="absolute left-1/2 transform text-wrap -translate-x-1/2 bottom-full mb-2 w-[300px] p-2 text-sm text-white bg-gray-700 rounded transition-opacity duration-300 opacity-0 hover-note">
+            Nếu bạn không nhập số ký của hành lý nghĩa là bạn không mang theo
+            hành lý. Ngược lại có thể nhập số ký tối đa của chuyến bay.{" "}
+            <span className="text-[#0194F3]">
+              Số ký chuyến bay này là {dataFlight.khoiLuongQuyDinhTrenMotVe} kg.
+            </span>
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-[-8px] w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-gray-700"></div>
+          </div>
+        </div>
+
+        <style jsx>{`
+          .icon-hover-trigger:hover + .hover-note {
+            opacity: 1;
+          }
+        `}</style>
+      </div>
+      {!checkSoKy && (
+        <span className="text-rose-600 text-sm ml-4">
+          * Số ký vượt quá quy định
+        </span>
+      )}
+      <div className="flex w-full items-center justify-start mt-[2%]">
+        <input
+          value={soKy}
+          onChange={handleSetSoKy}
+          type="number"
+          className="w-10 text-xl flex shadow-2xl shadow-blue-500/50 items-center justify-center focus:border-0 focus:outline-0 rounded-md border-0 border-neutral-900/50 border-b-2 p-2 font-medium hover:border-cyan-400"
+        />{" "}
+        <span className="text-base text-slate-500">KG</span>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, useRef, useContext, useCallback } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import "react-slideshow-image/dist/styles.css";
@@ -11,6 +12,8 @@ import Header from "../Header.js";
 import ItemFlight from "./ItemFlight.js";
 import { LoginSuccess } from "../Setting/StateLoginSucces.js";
 import { Login } from "../Home/FormCheck.js";
+import { format, addDays, parse } from "date-fns";
+import { vi } from "date-fns/locale";
 
 export const XemDanhSachChuyenBay = () => {
   const {
@@ -20,13 +23,22 @@ export const XemDanhSachChuyenBay = () => {
     isDap,
     today,
     switchNgayBay,
+    setSwitchNgayBay,
     isShowInterfaceLogin,
     setFlights,
     isOpenChooseHangVe,
     isShowOptionSetting_LoginSuccess,
     isFlights,
     handleChooseOpenHangVe_,
+    select1Value,
+    select2Value,
+    ngayDi,
   } = useContext(CONTEXT);
+
+  //!new
+  const locatSearchForChuyenBay = useLocation();
+  const { dtSelect1Value, dtSelect2Value, dtNgayDi } =
+    locatSearchForChuyenBay.state;
 
   //chọn giờ
   const [clickedIndex, setClickedIndex] = useState(null);
@@ -271,11 +283,11 @@ export const XemDanhSachChuyenBay = () => {
   return (
     <>
       {isShowInterfaceLogin && <Login />}
+      {isOpenChooseHangVe && <ChinhSoLuongVaHangVeTaiCB />}
       <div className="relative h-fit w-screen py-5">
         <Header />
         {isShowOptionSetting_LoginSuccess && <LoginSuccess />}
         {dialogDoiTimKiem && <DoiTimKiemChuyenBay />}
-        {isOpenChooseHangVe && <ChinhSoLuongVaHangVeTaiCB />}
         {}
         <div className="flex justify-center bg-slate-100  gap-6">
           <div className="sticky top-[87px] z-20 h-[500px] flex flex-col items-center w-[25%] overflow-y-scroll overflow-hidden">
@@ -491,20 +503,21 @@ export const XemDanhSachChuyenBay = () => {
               >
                 <div>
                   <p className="text-lg font-bold leading-[30px] line-clamp-1">
-                    {isBay === null ? "Sân bay Đà Nẵng" : isBay} →
-                    {isDap === null ? "Sân bay Tokyo" : isDap}
+                    {dtSelect1Value} →{dtSelect2Value}
                   </p>
                   <span className="text-base font-semibold text-[#687176] leading-[35px]">
-                    {switchNgayBay}
+                    {format(new Date(dtNgayDi), "EEEE, d 'thg' M yyyy", {
+                      locale: vi,
+                    })}
                   </span>
                 </div>
                 {isAjustHovered ? (
                   <span
                     onClick={() =>
                       handleDialogDoiTimKiem(
-                        () => (isBay === null ? "Sân bay Đà Nẵng" : isBay),
-                        () => (isDap === null ? "Sân bay Tokyo" : isDap),
-                        today
+                        dtSelect1Value,
+                        dtSelect2Value,
+                        new Date(dtNgayDi)
                       )
                     }
                     className={`text-base font-semibold text-zinc-800 hover:text-[#0194f3] cursor-pointer`}
@@ -604,48 +617,58 @@ function ShowFlight({ flights }) {
     },
     [expandedIndex]
   );
+  const { select1Value, select2Value } = useContext(CONTEXT);
+  //!new
+  const locatSearchForChuyenBay = useLocation();
+  const { dtSelect1Value, dtSelect2Value, dtNgayDi } =
+    locatSearchForChuyenBay.state;
   return (
     <div className="flex flex-col h-fit w-full mt-[2%]">
-      {flights.map((flight, index) => (
-        <div className="relative">
-          <div
-            key={index}
-            ref={(el) => (itemRefs.current[index] = el)}
-            className={`transition-all duration-300 border-2 mb-3 hover:border-cyan-400 overflow-hidden rounded-md ${
-              expandedIndex === index ? "h-fit" : "h-[130px]"
-            }`}
-            onClick={() => handleClick(index)}
-          >
-            <ItemFlight
-              dateDi={flight.dateDi}
-              dateDen={flight.dateDen}
-              timeDi={flight.timeDi}
-              diemDi={flight.diemDi}
-              timeDen={flight.timeDen}
-              diemDen={flight.diemDen}
-              giaVe={flight.giaVeGoc}
-              //
-              dateDi_={flight.dateDi}
-              dateDen_={flight.dateDen}
-              timeDi_={flight.timeDi}
-              timeDen_={flight.timeDen}
-              diemDi_={flight.diemDi}
-              soLuongGhe={flight.soLuongGhe}
-              khoiLuongQuyDinhTrenMotVe={flight.khoiLuongQuyDinhTrenMotVe}
-              diemDen_={flight.diemDen}
-            />
-          </div>
+      {flights
+        .filter(
+          (f) => f.diemDi === dtSelect1Value && f.diemDen === dtSelect2Value
+        )
+        .map((flight, index) => (
+          <div className="relative">
+            <div
+              key={index}
+              ref={(el) => (itemRefs.current[index] = el)}
+              className={`transition-all duration-300 border-2 mb-3 hover:border-cyan-400 overflow-hidden rounded-md ${
+                expandedIndex === index ? "h-fit" : "h-[130px]"
+              }`}
+              onClick={() => handleClick(index)}
+            >
+              <ItemFlight
+                dateDi={flight.dateDi}
+                dateDen={flight.dateDen}
+                timeDi={flight.timeDi}
+                diemDi={flight.diemDi}
+                timeDen={flight.timeDen}
+                diemDen={flight.diemDen}
+                giaVe={flight.giaVeGoc}
+                //
+                dateDi_={flight.dateDi}
+                dateDen_={flight.dateDen}
+                timeDi_={flight.timeDi}
+                timeDen_={flight.timeDen}
+                diemDi_={flight.diemDi}
+                soGheThuong={flight.soGheThuong}
+                soGheThuongGia={flight.soGheThuongGia}
+                khoiLuongQuyDinhTrenMotVe={flight.khoiLuongQuyDinhTrenMotVe}
+                diemDen_={flight.diemDen}
+              />
+            </div>
 
-          <button
-            key={flight._id}
-            ref={(el) => (itemRefs.current[index] = el)}
-            className="bg-[#0194F3] right-3 absolute bottom-6 text-white w-fit h-fit px-4 py-2 lg:px-[35px] lg:py-[7px] mt-[30px] rounded-lg"
-            onClick={() => handleChooseOpenHangVe(flight)}
-          >
-            Chọn
-          </button>
-        </div>
-      ))}
+            <button
+              key={flight._id}
+              ref={(el) => (itemRefs.current[index] = el)}
+              className="bg-[#0194F3] right-3 absolute bottom-6 text-white w-fit h-fit px-4 py-2 lg:px-[35px] lg:py-[7px] mt-[30px] rounded-lg"
+              onClick={() => handleChooseOpenHangVe(flight)}
+            >
+              Chọn
+            </button>
+          </div>
+        ))}
     </div>
   );
 }

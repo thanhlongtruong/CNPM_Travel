@@ -12,11 +12,40 @@ export const OrderProvider = ({ children }) => {
     setShowInterfaceLogin(!isShowInterfaceLogin);
   };
 
+  //!NEWWWWWWWWW KIET
+  //! new
+  const [diemDenArray, setDiemDenArray] = useState([]);
+  const [diemDiArray, setDiemDiArray] = useState([]);
+  const [select1Value, setSelect1Value] = useState();
+  const [select2Value, setSelect2Value] = useState();
+
+  const [ngayDi, setNgayDi] = useState(() => {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    const year = today.getFullYear();
+    const monthS = month < 10 ? `0${month}` : `${month}`;
+    const dayS = day < 10 ? `0${day}` : `${day}`;
+    return `${year}-${monthS}-${dayS}`;
+  });
+
+  const navi = useNavigate();
+  const searchForChuyenBay = async () => {
+    navi("/XemDanhSachChuyenBay", {
+      state: {
+        dtSelect1Value: select1Value,
+        dtSelect2Value: select2Value,
+        dtNgayDi: ngayDi,
+      },
+    });
+  };
+  //!MEWWWWWWWW KIET
+
   const [isBay, setBay] = useState(null);
   const [isDap, setDap] = useState(null);
-  const [today, setToday] = useState(new Date());
+  const [today, setToday] = useState(new Date(ngayDi));
   const [switchNgayBay, setSwitchNgayBay] = useState(
-    format(today, "EEEE, d 'thg' M yyyy", { locale: vi })
+    format(new Date(ngayDi), "EEEE, d 'thg' M yyyy", { locale: vi })
   );
 
   //mở dialog và set sân bay
@@ -58,7 +87,10 @@ export const OrderProvider = ({ children }) => {
 
   //TODO func handle login
   const handleEventLogin = () => {
-    if (isUser.password !== isInputPassword) {
+    if (
+      isUser.password !== isInputPassword &&
+      isUser.status === "Tài khoản đã bị khóa"
+    ) {
       setShowNotiFailLogin(!isShowNotiFailLogin);
     } else {
       setStateLogin(true);
@@ -239,28 +271,18 @@ export const OrderProvider = ({ children }) => {
     useState(false);
   const [isTicket, setTicket] = useState();
   const navigate = useNavigate();
-  const handleMake_a_Reservation = async ({
-    quantityTicket,
-    isSoKyHanhLy,
-    isTongGia,
-    statusChooseTicket,
-    flight,
-  }) => {
+  const handleMake_a_Reservation = async ({ quantityTicket, flight }) => {
     if (!isUser) {
       setShowInterfaceLogin(!isShowInterfaceLogin);
       setTimeShowNotiMake_a_Reservation(true);
     } else {
       const ticket = {
         soLuongVe: quantityTicket,
-        soKyHanhLy: isSoKyHanhLy,
-        hangVe: statusChooseTicket ? "Hạng thường" : "Hạng thương gia",
-        giaVe: isTongGia,
         trangThaiVe: "Đang chờ thanh toán",
         userID: isUser._id,
-        chuyenBayId: flight._id,
       };
       try {
-        await setTicket(ticket);
+        // await setTicket(ticket);
 
         navigate("/XemDanhSachChuyenbBay/DatChoCuaToi", {
           state: {
@@ -296,6 +318,7 @@ export const OrderProvider = ({ children }) => {
       currency: "VND",
     }).format(value);
   }
+
   return (
     <CONTEXT.Provider
       value={{
@@ -372,6 +395,18 @@ export const OrderProvider = ({ children }) => {
         handleClonedBlock,
         isStateLogin,
         handleEventLogin,
+        diemDenArray,
+        setDiemDenArray,
+        diemDiArray,
+        setDiemDiArray,
+        select1Value,
+        setSelect1Value,
+        select2Value,
+        setSelect2Value,
+        ngayDi,
+        setNgayDi,
+        handleDialogDoiTimKiem,
+        searchForChuyenBay,
       }}
     >
       {children}

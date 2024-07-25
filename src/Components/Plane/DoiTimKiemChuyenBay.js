@@ -26,6 +26,17 @@ export default function DoiTimKiemChuyenBay() {
     today,
     setToday,
     setSwitchNgayBay,
+    diemDenArray,
+    setDiemDenArray,
+    diemDiArray,
+    setDiemDiArray,
+    select1Value,
+    setSelect1Value,
+    select2Value,
+    setSelect2Value,
+    ngayDi,
+    setNgayDi,
+    searchForChuyenBay,
   } = useContext(CONTEXT);
   const selectRefBay = useRef(null);
   const selectRefDap = useRef(null);
@@ -37,13 +48,6 @@ export default function DoiTimKiemChuyenBay() {
       selectRefDap.current.options[selectRefDap.current.selectedIndex].text;
     selectRefDap.current.options[selectRefDap.current.selectedIndex].text =
       temp;
-
-    setBay(
-      selectRefBay.current.options[selectRefBay.current.selectedIndex].text
-    );
-    setDap(
-      selectRefDap.current.options[selectRefDap.current.selectedIndex].text
-    );
   };
 
   //Load khi mở dialog
@@ -70,13 +74,16 @@ export default function DoiTimKiemChuyenBay() {
 
   //Đổi string input sang type Date
   const handleInputDateConvert = (event) => {
-    const dateValue = event.target.value; // This is in the format 'yyyy-mm-dd'
-    const [year, month, day] = dateValue.split("-");
-    const formattedDate = new Date(year, month - 1, day);
-    setToday(formattedDate);
-    setSwitchNgayBay(
-      format(formattedDate, "EEEE, d 'thg' M yyyy", { locale: vi })
-    );
+    const dateValue = event.target.value;
+    setNgayDi(() => {
+      const date = new Date(dateValue);
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const year = date.getFullYear();
+      const monthS = month < 10 ? `0${month}` : `${month}`;
+      const dayS = day < 10 ? `0${day}` : `${day}`;
+      return `${year}-${monthS}-${dayS}`;
+    });
   };
 
   //Unscrollable screen
@@ -93,7 +100,10 @@ export default function DoiTimKiemChuyenBay() {
   return (
     <div className="fixed top-0 z-[25] w-full h-full">
       <div
-        onClick={() => setDialogDoiTimKiem(false)}
+        onClick={() => {
+          setDialogDoiTimKiem(false);
+          searchForChuyenBay();
+        }}
         className="absolute z-[25] w-full h-full bg-black/50"
       ></div>
       <div className="w-[50%] z-30 h-fit rounded-xl p-[1%] bg-white fixed top-[25%] left-[25%] transform translate-x-0 translate-y-0 flex flex-col items-center">
@@ -131,19 +141,19 @@ export default function DoiTimKiemChuyenBay() {
               </label>
               <select
                 ref={selectRefBay}
-                onChange={() =>
-                  setBay(
-                    selectRefBay.current.options[
-                      selectRefBay.current.selectedIndex
-                    ].text
-                  )
-                }
+                onChange={(e) => {
+                  setSelect1Value(e.target.value);
+                  setDiemDiArray([...new Set(diemDiArray)]);
+                }}
+                value={select1Value}
                 id="bay-select"
                 className="appearance-none text-left max-w-[70%]"
               >
-                <option>Sân bay Tân Sơn Nhất</option>
-                <option>Sân bay Đà Nẵng</option>
-                <option>Sân bay Nội Bài</option>
+                {diemDiArray
+                  .filter((d) => d !== select2Value)
+                  .map((d, index) => (
+                    <option>{d}</option>
+                  ))}
               </select>
             </div>
           </div>
@@ -179,19 +189,18 @@ export default function DoiTimKiemChuyenBay() {
               </label>
               <select
                 ref={selectRefDap}
-                onChange={() =>
-                  setDap(
-                    selectRefDap.current.options[
-                      selectRefDap.current.selectedIndex
-                    ].text
-                  )
-                }
+                onChange={(e) => {
+                  setSelect2Value(e.target.value);
+                }}
+                value={select2Value}
                 id="dap-select"
                 className="appearance-none text-left max-w-[70%]"
               >
-                <option>Sân bay Tokyo</option>
-                <option>Sân bay Los Angeles</option>
-                <option>Sân bay Thượng Hải</option>
+                {diemDenArray
+                  .filter((d) => d !== select1Value)
+                  .map((d, index) => (
+                    <option>{d}</option>
+                  ))}
               </select>
             </div>
           </div>

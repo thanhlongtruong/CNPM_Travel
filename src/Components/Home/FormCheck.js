@@ -90,6 +90,7 @@ export function Login() {
       gender: gender,
       birthday: birthday,
       password: password,
+    
     };
     try {
       const response = await fetch("http://localhost:4001/api/users/signup", {

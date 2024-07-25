@@ -44,7 +44,8 @@ const ItemFlight = (isFlight) => {
           dateDi_={isFlight.dateDi}
           dateDen_={isFlight.dateDen}
           timeDi_={isFlight.timeDi_}
-          soLuongGhe={isFlight.soLuongGhe}
+          soGheThuong={isFlight.soGheThuong}
+          soGheThuongGia={isFlight.soGheThuongGia}
           timeDen_={isFlight.timeDen_}
           diemDi_={isFlight.diemDi_}
           khoiLuongQuyDinhTrenMotVe={isFlight.khoiLuongQuyDinhTrenMotVe}
