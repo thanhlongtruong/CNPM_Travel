@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../Header";
 import { Link, useLocation } from "react-router-dom";
+import {
+  NotiFailEventlogin,
+  CHUA_DIEN_THONGTIN_VE,
+} from "../Noti/NotiFailEventLogin";
 
 function DatChoCuaToi() {
   const dataTicketLocation = useLocation();
@@ -27,12 +31,73 @@ function DatChoCuaToi() {
     }
   }, [sizeSizeWidth]);
 
-  const [isGetName, setGetName] = useState([]);
-  const [isGetPhone, setGetPhone] = useState([]);
+  const [isGetName, setGetName] = useState([null]);
+  const [isGetPhone, setGetPhone] = useState([null]);
+
   const [isGetSoKy, setGetSoky] = useState([]);
-  const [isGetHangVe, setGetHangVe] = useState([]);
+  const [isGetHangVe, setGetHangVe] = useState([null]);
   const [isGiaVe, setGiaVe] = useState([]);
 
+  const [isCheck, setCheck] = useState(true);
+
+  const [isShowWarm, setShowWarm] = useState(false);
+
+  const handleWarm = () => {
+    setShowWarm(false);
+  };
+
+  //! set time auto turn off noti submit fail
+  useEffect(() => {
+    if (!isCheck) {
+      setTimeout(() => {
+        setCheck(true);
+      }, 2500);
+    }
+  });
+
+  function validateHangVeArray() {
+    for (let i = 0; i < dataTicket.soLuongVe; i++) {
+      if (isGetHangVe[i] === null) {
+        return false;
+      }
+    }
+  }
+  function validateNameArray() {
+    for (let i = 0; i < dataTicket.soLuongVe; i++) {
+      if (
+        isGetName[i] === undefined ||
+        isGetName[i] === "" ||
+        isGetName[i].trimStart().length < 2
+      ) {
+        return false;
+      }
+    }
+  }
+  function validatePhoneArray() {
+    for (let i = 0; i < dataTicket.soLuongVe; i++) {
+      if (
+        isGetPhone[i] === undefined ||
+        isGetPhone[i] === "" ||
+        isGetPhone[i].trim().length !== 10 ||
+        !/^\d{10}$/.test(isGetPhone[i])
+      ) {
+        return false;
+      }
+    }
+  }
+
+  const handleCheck = () => {
+    if (
+      validateNameArray() === false ||
+      validatePhoneArray() === false ||
+      validateHangVeArray() === false
+    ) {
+      setCheck(false);
+    } else {
+    }
+  };
+
+  //! Name
   const handlGetInputName = (name, index) => {
     setGetName((prev) => {
       const updated = [...prev];
@@ -41,6 +106,7 @@ function DatChoCuaToi() {
     });
   };
 
+  //! Phone
   const handlGetInputPhone = (phone, index) => {
     setGetPhone((prev) => {
       const updated = [...prev];
@@ -48,6 +114,8 @@ function DatChoCuaToi() {
       return updated;
     });
   };
+
+  //! Số ký
   const handlGetSoKy = (soKy, index) => {
     setGetSoky((prev) => {
       const updated = [...prev];
@@ -56,6 +124,7 @@ function DatChoCuaToi() {
     });
   };
 
+  //! Hạng vé
   const handlGetHangVe = (hangVe, index) => {
     setGetHangVe((prev) => {
       const updated = [...prev];
@@ -64,6 +133,7 @@ function DatChoCuaToi() {
     });
   };
 
+  //! Giá vé
   const handlGetGia = (type, index) => {
     if (type === "Vé thường") {
       setGiaVe((prev) => {
@@ -80,8 +150,33 @@ function DatChoCuaToi() {
       });
     }
   };
-  //!
-  const handleResTicket = async () => {
+
+  //! Tạo Oder and Ticket
+  const handlCreateTicket = async () => {
+    try {
+      const dhCreate = await fetch("http://localhost:4004/api/add_donhang", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: dataUser._id,
+          soLuongVe: dataTicket.soLuongVe,
+          tongGia: 0,
+        }),
+      });
+
+      const dhJS = await dhCreate.json();
+
+      const dhId = dhJS._id;
+
+      await handleResTicket(dhId);
+    } catch (error) {
+      console.error("Bug when creating order:", error);
+    }
+  };
+
+  const handleResTicket = async (dhId) => {
     const promises = [];
     for (let i = 0; i < dataTicket.soLuongVe; i++) {
       promises.push(
@@ -94,6 +189,9 @@ function DatChoCuaToi() {
             Ten: isGetName[i],
             phoneNumber: isGetPhone[i],
             soKyHanhLy: isGetSoKy[i],
+            hangVe: isGetHangVe[i],
+            giaVe: isGiaVe[i],
+            maDon: dhId,
             chuyenBayId: dataFlight._id,
             trangThaiVe: dataTicket.trangThaiVe,
           }),
@@ -115,15 +213,22 @@ function DatChoCuaToi() {
       const data = await Promise.all(res.map((res) => res.json()));
       console.log(data);
     } catch (error) {
-      console.error("Bug when create ticket", error);
+      console.error("Bug when creating tickets:", error);
     }
   };
 
   return (
     <>
       <Header />
+      {isShowWarm && (
+        <FCActiveThanhToan
+          handlCreateTicket={handlCreateTicket}
+          handleWarm={handleWarm}
+        />
+      )}
+
       <div className="w-[80%] h-fit lg:grid-cols-[30%_auto] grid py-10 lg:gap-x-3 m-auto">
-        <div className="w-full lg:w-[30%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-2 lg:mt-14">
+        <div className="w-full lg:w-[30%] grid grid-cols-1 h-fit md:grid-cols-2 lg:grid-cols-1 gap-2 lg:mt-14">
           {Array.from({ length: dataTicket.soLuongVe }, (_, index) => (
             <InfoTicket
               key={index}
@@ -299,13 +404,16 @@ function DatChoCuaToi() {
               />
             </div>
           ))}
+          <div className="fixed h-fit top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-full">
+            {!isCheck && <NotiFailEventlogin content={CHUA_DIEN_THONGTIN_VE} />}
+          </div>
 
           <button
             type="button"
-            onClick={handleResTicket}
+            onClick={() => setShowWarm(true)}
             className="p-3 bg-[#0194F3] text-white mt-3 float-right font-semibold rounded-lg"
           >
-            Xác nhận
+            Tiếp tục
           </button>
         </div>
       </div>
@@ -316,7 +424,7 @@ export default DatChoCuaToi;
 
 function InfoTicket({ dataFlight, dataTicket }) {
   return (
-    <div className="w-[300px] flex-col bg-white md:mb-2 rounded-md">
+    <div className="w-[300px] flex-col bg-white md:mb-2 rounded-md shadow-lg h-fit">
       <div className="p-4 flex gap-3 shadow-sm">
         <img
           className="h-[30px] w-[30px] mt-1"
@@ -376,8 +484,8 @@ function InfoTicket({ dataFlight, dataTicket }) {
           </div>
         </div>
       </div>
-      <div className="p-4 flex-col shadow-lg rounded-b-md">
-        <div className="flex gap-2">
+      <div className="p-4 flex-col rounded-b-md">
+        {/* <div className="flex gap-2">
           <img
             src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/0/0451207408e414bb8a1664153973b3c8.svg"
             alt=""
@@ -386,7 +494,7 @@ function InfoTicket({ dataFlight, dataTicket }) {
           <h4 className="text-sm text-gray-500 font-medium">
             Hạng vé: {dataTicket.hangVe}
           </h4>
-        </div>
+        </div> */}
         <div className="flex gap-2 mt-2">
           <img
             src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/0/0451207408e414bb8a1664153973b3c8.svg"
@@ -394,10 +502,11 @@ function InfoTicket({ dataFlight, dataTicket }) {
             className="h-[14px] w-[14px] mt-1"
           />
           <h4 className="text-sm text-gray-500 font-medium">
-            Số ký hành lý: {dataTicket.soKyHanhLy} Kg
+            Số ký tối thiểu của hành lý: {dataFlight.khoiLuongQuyDinhTrenMotVe}{" "}
+            Kg
           </h4>
         </div>
-        <div className="flex gap-2 mt-2">
+        {/* <div className="flex gap-2 mt-2">
           <img
             src="https://d1785e74lyxkqq.cloudfront.net/_next/static/v2/0/0451207408e414bb8a1664153973b3c8.svg"
             alt=""
@@ -406,7 +515,7 @@ function InfoTicket({ dataFlight, dataTicket }) {
           <h4 className="text-sm text-gray-500 font-medium">
             Giá vé: {dataTicket.giaVe} VND
           </h4>
-        </div>
+        </div> */}
         <div className="flex gap-2 mt-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -443,8 +552,9 @@ function ThongTinHanhKhach({
 }) {
   const [fullName, setFullName] = useState("");
   const [numberPhone, setNumberPhone] = useState("");
-  const [checkFullName, checkSetFullName] = useState(true);
-  const [checkNumberPhone, checkSetNumberPhone] = useState(true);
+  const [checkFullName, checkSetFullName] = useState();
+  const [checkNumberPhone, checkSetNumberPhone] = useState();
+
   useEffect(() => {
     checkSetFullName(fullName.trimStart().length < 2 ? false : true);
     handlGetInputName(fullName, index);
@@ -471,13 +581,13 @@ function ThongTinHanhKhach({
       <div className="mt-[16px]  bg-white shadow-lg rounded-md">
         <div className="pl-[16px] pr[16px] flex h-[52px] p-4 shadow-sm">
           <h3 className="text-base w-[570px]">Thông tin vé {index + 1}</h3>
-          <h3 className=" cursor-pointer text-base text-blue-500">Lưu</h3>
+          {/* <h3 className=" cursor-pointer text-base text-blue-500">Lưu</h3> */}
         </div>
         <div className="w-full m-0 flex p-4 flex-col md:flex-row">
           <div className="w-[50%] mb-[16px] pr-[12px]">
             <div className="flex flex-col">
               <div className="flex">
-                <h3 className=" font-medium text-sm text-gray-500">
+                <h3 className=" font-mediumd text-sm text-gray-500">
                   Họ Tên (vd: Nguyen Anh)
                 </h3>{" "}
                 <span className="text-red-500 text-sm">*</span>
@@ -485,14 +595,12 @@ function ThongTinHanhKhach({
               <div className="mt-2">
                 <input
                   defaultValue={fullName}
-                  className="border border-gray-300 h-[40px] w-full rounded-md px-2 "
+                  className={`border h-[40px] font-semibold text-[17px] focus:border-[#0194F34F] focus:outline-0 w-full rounded-md px-2 ${!checkFullName ? "border-[#F45A5A]" : "border-gray-300"}`}
                   type="text"
                   onChange={handlSetName}
                 />
                 <span className="text-red-600 font-medium text-sm ">
-                  {checkFullName
-                    ? ""
-                    : "Họ Tên (vd: Nguyen Anh) là phần bắt buộc"}
+                  {checkFullName ? "" : "Họ Tên là phần bắt buộc"}
                 </span>
               </div>
             </div>
@@ -508,20 +616,20 @@ function ThongTinHanhKhach({
               <div className="mt-2">
                 <input
                   defaultValue={numberPhone}
-                  className="border border-gray-300 h-[40px] w-full rounded-md px-2"
+                  className={`border h-[40px] font-semibold text-[17px] focus:border-[#0194F34F] focus:outline-0 w-full rounded-md px-2 ${!checkFullName ? "border-[#F45A5A]" : "border-gray-300"}`}
                   type="text"
                   onChange={handlSetPhone}
                 />
                 <span className="text-red-600 font-medium text-sm ">
                   {checkNumberPhone
                     ? ""
-                    : "Số điện thoại (vd: 0987654321) là phần bắt buộc"}
+                    : "Số điện thoại là phần bắt buộc (10 số)"}
                 </span>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex justify-between w-full">
+        <div className="w-full m-0 flex p-4 flex-col md:flex-row justify-between">
           <FCChooseHangVe
             dataFlight={dataFlight}
             index={index}
@@ -540,23 +648,25 @@ function ThongTinHanhKhach({
 }
 
 function FCChooseHangVe({ dataFlight, index, handlGetHangVe, handlGetGia }) {
-  const [isClicked, setIsClicked] = useState();
+  const [isClicked, setIsClicked] = useState(null);
+
+  useEffect(() => {}, [isClicked]);
   const handleButtonClick = (type) => {
     if (type === "Vé thường") {
       handlGetHangVe(type, index);
-      handlGetGia(type, index);
+      handlGetGia(type, index, isClicked);
       setIsClicked(true);
     }
     if (type === "Vé thương gia") {
       handlGetHangVe(type, index);
-      handlGetGia(type, index);
+      handlGetGia(type, index, isClicked);
       setIsClicked(false);
     }
   };
   return (
-    <div className="shadow-md flex flex-col p-5 w-fit text-xl rounded-2xl m-[2%] font-bold bg-white items-start">
+    <div className="shadow-md flex flex-col p-3 w-[48%] text-xl rounded-2xl font-bold bg-white items-start">
       <div className="flex gap-2 items-center">
-        <span className="text-lg select-none pointer-events-none">
+        <span className="text-lg font-semibold select-none pointer-events-none">
           Chọn hạng vé
         </span>
         <div className="relative">
@@ -589,11 +699,11 @@ function FCChooseHangVe({ dataFlight, index, handlGetHangVe, handlGetGia }) {
           }
         `}</style>
       </div>
-      <div className="flex flex-col gap-3 w-fit mt-[2%] justify-evenly">
+      <div className="flex flex-col gap-3 w-full mt-[2%] justify-evenly">
         {/*//! Ticket Normal */}
 
         <button
-          className={`border-2 rounded-lg h-fit flex gap-x-3 w-fit p-2 hover:border-[#0194F3] ${isClicked === true ? "border-[#0194F3]" : ""}`}
+          className={`border-2 rounded-lg h-fit flex justify-center gap-x-4 w-full p-2 hover:border-[#0194F3] ${isClicked === true ? "border-[#0194F3]" : ""}`}
           onClick={() => handleButtonClick("Vé thường")}
         >
           <img
@@ -614,7 +724,7 @@ function FCChooseHangVe({ dataFlight, index, handlGetHangVe, handlGetGia }) {
         {/*//! Ticket Rich */}
         <button
           type="button"
-          className={`border-2 rounded-lg h-fit flex gap-x-3 w-fit p-2 hover:border-[#0194F3] ${isClicked === false ? "border-[#0194F3]" : ""}`}
+          className={`border-2 rounded-lg h-fit flex gap-x-4 w-full justify-center p-2 hover:border-[#0194F3] ${isClicked === false ? "border-[#0194F3]" : ""}`}
           onClick={() => handleButtonClick("Vé thương gia")}
         >
           <img
@@ -652,9 +762,9 @@ function FCInputSoKy({ index, handlGetSoKy, dataFlight }) {
     setSoKy(e.target.value);
   };
   return (
-    <div className="shadow-md mb-3 flex flex-col h-fit w-fit p-5 rounded-2xl mx-[2%] font-bold bg-white items-start">
+    <div className="shadow-md mb-3 flex flex-col h-fit w-[47%] p-5 rounded-2xl font-bold bg-white items-start">
       <div className="flex gap-2 items-center ">
-        <span className="select-none pointer-events-none text-lg">
+        <span className="text-lg font-semibold select-none pointer-events-none">
           Nhập số ký hành lý của bạn
         </span>
 
@@ -676,8 +786,8 @@ function FCInputSoKy({ index, handlGetSoKy, dataFlight }) {
             </svg>
           </div>
           <div className="absolute left-1/2 transform text-wrap -translate-x-1/2 bottom-full mb-2 w-[300px] p-2 text-sm text-white bg-gray-700 rounded transition-opacity duration-300 opacity-0 hover-note">
-            Nếu bạn không nhập số ký của hành lý nghĩa là bạn không mang theo
-            hành lý. Ngược lại có thể nhập số ký tối đa của chuyến bay.{" "}
+            {/* Nếu bạn không nhập số ký của hành lý nghĩa là bạn không mang theo
+            hành lý. Ngược lại có thể nhập số ký tối đa của chuyến bay.{" "} */}
             <span className="text-[#0194F3]">
               Số ký chuyến bay này là {dataFlight.khoiLuongQuyDinhTrenMotVe} kg.
             </span>
@@ -696,15 +806,48 @@ function FCInputSoKy({ index, handlGetSoKy, dataFlight }) {
           * Số ký vượt quá quy định
         </span>
       )}
-      <div className="flex w-full items-center justify-start mt-[2%]">
+      <div className="flex gap-x-2 w-full items-center justify-start mt-[2%]">
         <input
           value={soKy}
           onChange={handleSetSoKy}
           type="number"
           className="w-10 text-xl flex shadow-2xl shadow-blue-500/50 items-center justify-center focus:border-0 focus:outline-0 rounded-md border-0 border-neutral-900/50 border-b-2 p-2 font-medium hover:border-cyan-400"
         />{" "}
-        <span className="text-base text-slate-500">KG</span>
+        <span
+          className={`text-base ${checkSoKy ? "text-[#0194F3]" : "text-rose-600"}`}
+        >
+          KG
+        </span>
       </div>
+    </div>
+  );
+}
+
+function FCActiveThanhToan({ handlCreateTicket, handleWarm }) {
+  return (
+    <div className="w-screen h-screen z-50 fixed p-2">
+      <p className="w-[40%] top-[40%] left-[50%] transform select-none text-white -translate-x-1/2 -translate-y-1/2 absolute bg-[#0194F3] h-fit p-5 rounded-lg text-lg font-semibold">
+        Sau khi xác nhận bạn{" "}
+        <span className="text-[#ffcc00] text-lg font-bold">
+          không thể chỉnh sửa
+        </span>{" "}
+        lại thông tin vé. Vui lòng chắn chắc trước quyết định đến trang thanh
+        toán vé của bạn!
+        <button
+          type="button"
+          onClick={handlCreateTicket}
+          className="bg-white rounded-lg p-2 float-right mt-5 text-[#0194F3]"
+        >
+          Tiếp tục
+        </button>
+        <button
+          type="button"
+          onClick={handleWarm}
+          className="bg-white rounded-lg p-2 float-right mt-5 mr-8 text-[#0194F3]"
+        >
+          Hủy
+        </button>
+      </p>
     </div>
   );
 }

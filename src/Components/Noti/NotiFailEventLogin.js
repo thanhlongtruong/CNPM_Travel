@@ -10,6 +10,7 @@ export const CONTENT_UPDATE_SUCCESS = "Cập nhật thành công!";
 export const CONTENT_UPDATE_FAIL =
   "Cập nhật không thành công, vui lòng thử lại!";
 export const CONTENT_CHUA_LOGIN = "Vui lòng đăng nhập để tiếp tục!";
+export const CHUA_DIEN_THONGTIN_VE = "Vui lòng điền thông tin hành khách";
 
 export const NotiFailEventlogin = (prop) => {
   return (
